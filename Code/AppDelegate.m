@@ -20,7 +20,6 @@
 
 #import <LayerKit/LayerKit.h>
 #import <Parse/Parse.h>
-#import <PFFacebookUtils.h>
 #import "AppDelegate.h"
 #import "ViewController.h"
 
