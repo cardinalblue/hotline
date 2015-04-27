@@ -35,6 +35,11 @@ static NSString *const ParseClientKeyString = nil;
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
+    if (LayerAppIDString.length == 0 || ParseAppIDString.length == 0 || ParseClientKeyString.length == 0) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Invalid Configuration" message:@"You have not configured your Layer and/or Parse keys. Please check your configuration and try again." delegate:nil cancelButtonTitle:@"Rats!" otherButtonTitles:nil];
+        [alertView show];
+        return YES;
+    }
     // Enable Parse local data store for user persistence
     [Parse enableLocalDatastore];
     [Parse setApplicationId:ParseAppIDString
