@@ -34,7 +34,7 @@ For more in-depth documentation about this project, check our [guide](https://de
 
 In order to populate the sample app with content, you must configure the following variable inside [AppDelegate.m](Code/AppDelegate.m):
 
-* `LayerAppIDString`: The Layer application identifier for you application.
+* `LayerAppIDString`: The Layer application identifier for your application.
 * `ParseAppIDString`: Your Parse App ID.
 * `ParseClientKeyString`: Your Parse Client Key.
 
