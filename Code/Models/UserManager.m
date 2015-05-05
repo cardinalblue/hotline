@@ -100,7 +100,7 @@
             for (PFUser *user in objects) {
                 [self cacheUserIfNeeded:user];
             }
-            if (completion) completion(objects, nil);
+            if (completion) objects.count > 0 ? completion(objects, nil) : completion(nil, nil);
         } else {
             if (completion) completion(nil, error);
         }
