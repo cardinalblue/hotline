@@ -47,6 +47,10 @@ This project was lovingly crafted in San Francisco. At Layer, we are building th
 * [Blake Watters](https://github.com/blakewatters)
 * [Tomaž Štolfa](https://twitter.com/tomazstolfa)
 
+## Swift port
+
+Programming in Swift?  Check out [kwkhaw](https://github.com/kwkhaw)'s port to [Swift](https://github.com/kwkhaw/Layer-Parse-iOS-Swift-Example).
+
 ## License
 
 Layer-Parse-iOS-Example is available under the Apache 2 License. See the LICENSE file for more info.
