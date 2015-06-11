@@ -1,0 +1,14 @@
+{
+  "global": {
+    "parseVersion": "1.4.2"
+  },
+  "applications": {
+    "Hotline": {
+      "applicationId": "hTiiY6jCBD4oYxDQXHUouIICx53p6N485jX6XF4L",
+      "masterKey": "xP40HH990nMsoKhk15Arti2fc21fNOdfKGLvsZbw"
+    },
+    "_default": {
+      "link": "Hotline"
+    }
+  }
+}
