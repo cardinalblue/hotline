@@ -9,6 +9,7 @@
 #import <Parse/Parse.h>
 @import LayerKit;
 @import AVFoundation;
+#import "LYRClient+HOTAdditions.h"
 
 #import "HOTConversationViewController.h"
 
@@ -18,9 +19,11 @@ typedef enum : NSUInteger {
     ChatStatusPause,
 } HOTChatStatus;
 
-@interface HOTConversationViewController () <AVAudioRecorderDelegate>
+@interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate>
 
 @property (nonatomic, strong) LYRClient *layerClient;
+
+@property (nonatomic, strong) LYRMessage *currentMessage;
 
 @property (nonatomic, assign) HOTChatStatus chatStatus;
 
@@ -62,11 +65,23 @@ typedef enum : NSUInteger {
 - (void)initialize
 {
     self.chatStatus = ChatStatusIdle;
-    [self initAudioPlayer];
     [self createNewAudioRecorder];
+    
+    // Adds the notification observer
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
+                                                 name:LYRClientObjectsDidChangeNotification object:self.layerClient];
+    
+      self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Debug" style:UIBarButtonItemStylePlain target:self action:@selector(handleDebug)];
 }
 
-- (void)initAudioPlayer
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    self.currentMessage = [self.layerClient firstUnreadFromConversation:self.conversation error:nil];
+}
+
+- (void)handleDebug
 {
     
 }
@@ -100,20 +115,51 @@ typedef enum : NSUInteger {
     return outputFileURL;
 }
 
-- (void)fetchNewMessages
+- (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification
 {
+    LYRMessage *latest = [self.layerClient firstUnreadFromConversation:self.conversation error:nil];
     
+    if (self.currentMessage != latest) {
+        self.currentMessage = latest;
+    }
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
+- (void)setCurrentMessage:(LYRMessage *)currentMessage
+{
+    _currentMessage = currentMessage;
+
+    BOOL containsAudio = NO;
+    for (LYRMessagePart *part in currentMessage.parts) {
+        if ([part.MIMEType isEqualToString:@"audio/mp4"]) {
+            containsAudio = YES;
+        }
+    }
+    
+    if (currentMessage.isUnread && containsAudio) {
+        [self playCurrentMessage];
+    }
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)playCurrentMessage
 {
-    [super viewWillAppear:animated];
+    // Check state of the view, first. i.e. is it paused?
     
+    LYRMessagePart *partWithAudio;
+    for (LYRMessagePart *part in self.currentMessage.parts) {
+        if ([part.MIMEType isEqualToString:@"audio/mp4"]) {
+            NSLog(@"%@",part);
+            partWithAudio = part;
+        }
+    }
+    
+    if (partWithAudio.transferStatus != LYRContentTransferComplete) {
+        // Display spinner?
+        
+    }
+    
+    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:partWithAudio.fileURL error:nil];
+    [self.player setDelegate:self];
+    [self.player play];
 }
 
 #pragma mark - UI Handlers
@@ -134,6 +180,22 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - AVAudioRecorderDelegate methods
+
+
+#pragma mark - AVAudioPlayerDelegate methods
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    if (flag) {
+        
+    }
+}
+
+/* if an error occurs while decoding it will be reported to the delegate. */
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error
+{
+    
+}
 
 
 #pragma mark - Record Button modes
