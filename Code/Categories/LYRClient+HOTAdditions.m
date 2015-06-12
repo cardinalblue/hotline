@@ -36,6 +36,25 @@
     
     return nil;
 }
+- (LYRMessage *)lastMessage:(LYRConversation *)conversation
+                      error:(NSError *__autoreleasing *)error
+{
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+    LYRPredicate *converP = [LYRPredicate predicateWithProperty:@"conversation"
+                                              predicateOperator:LYRPredicateOperatorIsEqualTo
+                                                          value:conversation];
+    
+    query.predicate = converP;
+    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:NO]];
+    query.limit = 1;
+    
+    NSOrderedSet *messages = [self executeQuery:query error:error];
+    if (messages.count > 0)
+        return [messages firstObject];
+    
+    return nil;
+}
+
 - (LYRMessage *)messageAfter:(LYRMessage *)previousMessage
                        error:(NSError *__autoreleasing *)error
 {

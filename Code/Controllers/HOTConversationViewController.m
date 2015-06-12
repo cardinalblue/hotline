@@ -56,9 +56,8 @@ typedef enum : NSUInteger {
     self = [super init];
     if (self) {
         _layerClient = layerClient;
-        _state = PlayStateIdle;
-        
         [self initialize];
+        [self gotoIdle];
     }
     
     return self;
@@ -103,7 +102,10 @@ typedef enum : NSUInteger {
 - (void)gotoLoadingOrPlaying
 {
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
-    if (part.transferStatus == LYRContentTransferComplete) {
+    if (!part) {
+        [self tryNextMessage];
+    }
+    else if (part.transferStatus == LYRContentTransferComplete) {
         [self gotoPlaying];
     } else {
         [self gotoLoading];
@@ -114,7 +116,7 @@ typedef enum : NSUInteger {
 - (void)gotoError:(NSError *)error
 {
     self.state = PlayStateError;
-    self.playButton.titleLabel.text = @"ERROR";
+    [self.playButton setTitle:@"ERROR" forState:UIControlStateNormal];
     NSLog(@">>>>>>>>>> ERROR %@", error);
 
 }
@@ -130,16 +132,16 @@ typedef enum : NSUInteger {
     else {
         NSLog(@">>>> PlayStateLoading");
         self.state = PlayStateLoading;
-        self.playButton.titleLabel.text = @"Play (loading...)";
+        [self.playButton setTitle:@"()" forState:UIControlStateNormal];
     }
 }
 
 - (void)gotoPlaying
 {
-    NSLog(@">>>> PlayStatePlaying");
+    NSLog(@">>>> PlayStatePlaying message by %@", self.selectedMessage.sender.userID);
     self.state = PlayStatePlaying;
     
-    self.playButton.titleLabel.text = @"Pause";
+    [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
     [self playSelectedMessage];
     
@@ -150,7 +152,7 @@ typedef enum : NSUInteger {
     NSLog(@">>>> PlayStateIdle");
     self.state = PlayStateIdle;
     
-    self.playButton.titleLabel.text = @"Play (idle)";
+    [self.playButton setTitle:@"..." forState:UIControlStateNormal];
 }
 
 - (void)gotoPaused
@@ -160,8 +162,28 @@ typedef enum : NSUInteger {
     
     [self.player pause];
     
-    self.playButton.titleLabel.text = @"Play (paused)";
+    [self.playButton setTitle:@">" forState:UIControlStateNormal];
 }
+- (void)tryNextMessage
+{
+    NSError *error;
+    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    if (next) {
+        self.selectedMessage = next;
+        [self updateCounts];
+        [self gotoLoadingOrPlaying];
+    }
+    else {
+        if (error) {
+            [self gotoError:error];
+        }
+        else {
+            [self gotoIdle];
+        }
+    }
+}
+
+
 
 #pragma mark - Layer change notifications
 
@@ -194,6 +216,7 @@ typedef enum : NSUInteger {
     }
 }
 
+
 #pragma mark - Do stuff
 
 - (void)playSelectedMessage
@@ -218,7 +241,6 @@ typedef enum : NSUInteger {
         // self.nextButton.titleLabel.text     = [NSString stringWithFormat:@">>(%@,%@)",dic[@"after"], dic[@"unread"]];
     }
 }
-
 #pragma mark - UI Handlers
 
 - (void)handleDebug
@@ -237,12 +259,14 @@ typedef enum : NSUInteger {
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
-    // Do nothing if no message
-    if (!self.selectedMessage)
-        return;
     
     NSError *error;
-    LYRMessage *next = [self.layerClient messageBefore:self.selectedMessage error:&error];
+    LYRMessage *next;
+    if (!self.selectedMessage)
+        next = [self.layerClient lastMessage:self.conversation error:&error];
+    else
+        next = [self.layerClient messageBefore:self.selectedMessage error:&error];
+    
     if (next) {
         self.selectedMessage = next;
         [self updateCounts];
@@ -265,21 +289,7 @@ typedef enum : NSUInteger {
     if (!self.selectedMessage)
         return;
     
-    NSError *error;
-    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
-    if (next) {
-        self.selectedMessage = next;
-        [self updateCounts];
-        [self gotoLoadingOrPlaying];
-    }
-    else {
-        if (error) {
-            [self gotoError:error];
-        }
-        else {
-            [self gotoIdle];
-        }
-    }
+    [self tryNextMessage];
 }
 
 

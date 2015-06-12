@@ -12,6 +12,9 @@
 
 - (LYRMessage *)firstUnreadFromConversation:(LYRConversation *)conversation
                                       error:(NSError *__autoreleasing *)error;
+- (LYRMessage *)lastMessage:(LYRConversation *)conversation
+                      error:(NSError *__autoreleasing *)error;
+
 - (LYRMessage *)messageAfter:(LYRMessage *)previousMessage
                        error:(NSError *__autoreleasing *)error;
 - (LYRMessage *)messageBefore:(LYRMessage *)subsequentMessage
