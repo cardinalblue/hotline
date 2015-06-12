@@ -50,12 +50,6 @@ typedef enum : NSUInteger {
         [self initialize];
     }
     
-    // Special kludge to make sure all User's have an avatar
-    [PFCloud callFunctionInBackground:@"createUserAvatar"
-                       withParameters:@{} block:^(id object, NSError *error) {
-                           NSLog(@"createUserAvatar %@ %@", object, error);
-                       }];
-    
     return self;
 }
 
