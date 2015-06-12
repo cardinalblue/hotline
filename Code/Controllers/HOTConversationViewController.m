@@ -232,6 +232,10 @@ typedef enum : NSUInteger {
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
+    // Do nothing if no message
+    if (!self.selectedMessage)
+        return;
+    
     NSError *error;
     LYRMessage *next = [self.layerClient messageBefore:self.selectedMessage error:&error];
     if (next) {
@@ -251,6 +255,11 @@ typedef enum : NSUInteger {
 
 - (IBAction)handleNextButtonTapped:(id)sender
 {
+    
+    // Do nothing if no message
+    if (!self.selectedMessage)
+        return;
+    
     NSError *error;
     LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
     if (next) {
