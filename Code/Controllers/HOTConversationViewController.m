@@ -187,6 +187,7 @@ typedef enum : NSUInteger {
         }
         else if (next) {
             self.selectedMessage = next;
+            [self updateCounts];
             [self gotoLoadingOrPlaying];
         }
     }
@@ -235,6 +236,7 @@ typedef enum : NSUInteger {
     LYRMessage *next = [self.layerClient messageBefore:self.selectedMessage error:&error];
     if (next) {
         self.selectedMessage = next;
+        [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
     else {
@@ -253,6 +255,7 @@ typedef enum : NSUInteger {
     LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
     if (next) {
         self.selectedMessage = next;
+        [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
     else {
@@ -275,6 +278,7 @@ typedef enum : NSUInteger {
     LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
     if (next) {
         self.selectedMessage = next;
+        [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
     else {
