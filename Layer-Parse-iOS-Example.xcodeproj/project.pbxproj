@@ -23,6 +23,8 @@
 		25713D6F1AC6071600FC5D38 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D651AC6071600FC5D38 /* ViewController.m */; };
 		25713D701AC6071600FC5D38 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D661AC6071600FC5D38 /* main.m */; };
 		25713D711AC6071600FC5D38 /* UserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D691AC6071600FC5D38 /* UserManager.m */; };
+		569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 569172401B2A892E000DF4DC /* HOTConversationViewController.m */; };
+		569172431B2A8A9D000DF4DC /* HOTConversationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
 		DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */; };
 /* End PBXBuildFile section */
@@ -64,6 +66,9 @@
 		25713D681AC6071600FC5D38 /* UserManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserManager.h; sourceTree = "<group>"; };
 		25713D691AC6071600FC5D38 /* UserManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserManager.m; sourceTree = "<group>"; };
 		4499B2833234A6B927451A87 /* Pods-Layer-Parse-iOS-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Layer-Parse-iOS-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Layer-Parse-iOS-Example/Pods-Layer-Parse-iOS-Example.release.xcconfig"; sourceTree = "<group>"; };
+		5691723F1B2A892E000DF4DC /* HOTConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOTConversationViewController.h; sourceTree = "<group>"; };
+		569172401B2A892E000DF4DC /* HOTConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationViewController.m; sourceTree = "<group>"; };
+		569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HOTConversationViewController.xib; sourceTree = "<group>"; };
 		5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Layer-Parse-iOS-Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Layer-Parse-iOS-ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49C031AC399DD00B1B0C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -145,6 +150,9 @@
 		25713D5D1AC6071600FC5D38 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				5691723F1B2A892E000DF4DC /* HOTConversationViewController.h */,
+				569172401B2A892E000DF4DC /* HOTConversationViewController.m */,
+				569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */,
 				25713D5E1AC6071600FC5D38 /* ConversationListViewController.h */,
 				25713D5F1AC6071600FC5D38 /* ConversationListViewController.m */,
 				25713D601AC6071600FC5D38 /* ConversationViewController.h */,
@@ -301,6 +309,7 @@
 				25713D4F1AC605FC00FC5D38 /* Main.storyboard in Resources */,
 				25713D501AC605FC00FC5D38 /* Images.xcassets in Resources */,
 				25713D531AC605FC00FC5D38 /* LayerParseLogin@2x.png in Resources */,
+				569172431B2A8A9D000DF4DC /* HOTConversationViewController.xib in Resources */,
 				25713D521AC605FC00FC5D38 /* LayerParseAppIcon@2x.png in Resources */,
 				25713D551AC605FC00FC5D38 /* parse_logo.png in Resources */,
 				25713D561AC605FC00FC5D38 /* Users.json in Resources */,
@@ -360,6 +369,7 @@
 				25713D6B1AC6071600FC5D38 /* PFUser+ATLParticipant.m in Sources */,
 				25713D6D1AC6071600FC5D38 /* ConversationViewController.m in Sources */,
 				25713D6E1AC6071600FC5D38 /* ParticipantTableViewController.m in Sources */,
+				569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */,
 				25713D711AC6071600FC5D38 /* UserManager.m in Sources */,
 				25713D701AC6071600FC5D38 /* main.m in Sources */,
 				25713D6F1AC6071600FC5D38 /* ViewController.m in Sources */,
