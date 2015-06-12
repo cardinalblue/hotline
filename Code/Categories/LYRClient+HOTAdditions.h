@@ -16,6 +16,6 @@
                        error:(NSError *__autoreleasing *)error;
 - (LYRMessage *)messageBefore:(LYRMessage *)subsequentMessage
                         error:(NSError *__autoreleasing *)error;
-- (NSDictionary *)countsAfter:(LYRMessage *)previousMessage error:(NSError *__autoreleasing *)error;
+- (NSDictionary *)countsAround:(LYRMessage *)previousMessage error:(NSError *__autoreleasing *)error;
 
 @end

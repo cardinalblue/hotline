@@ -97,6 +97,8 @@ typedef enum : NSUInteger {
     }
 }
 
+#pragma mark - State transitions
+
 - (void)gotoLoadingOrPlaying
 {
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
@@ -139,6 +141,7 @@ typedef enum : NSUInteger {
     self.playButton.titleLabel.text = @"Pause";
     
     [self playSelectedMessage];
+    
 }
 
 - (void)gotoIdle
@@ -159,40 +162,7 @@ typedef enum : NSUInteger {
     self.playButton.titleLabel.text = @"Play (paused)";
 }
 
-- (void)handleDebug
-{
-    
-}
-
-- (void)createNewAudioRecorder
-{
-    NSURL *outputFileURL = [self newTemporaryFile];
-    
-    // Setup audio session
-    AVAudioSession *session = [AVAudioSession sharedInstance];
-    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-    
-    // Define the recorder setting
-    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
-    
-    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
-    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
-    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
-    
-    // Initiate and prepare the recorder
-    self.recorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
-    self.recorder.delegate = self;
-    self.recorder.meteringEnabled = YES;
-    [self.recorder prepareToRecord];
-}
-
-- (NSURL *)newTemporaryFile
-{
-    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"_chat_audio.mp4"];
-    NSURL *outputFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
-    
-    return outputFileURL;
-}
+#pragma mark - Layer change notifications
 
 // When layer objects change, the conversation view only cares if it
 // is in the waiting state.
@@ -222,6 +192,8 @@ typedef enum : NSUInteger {
     }
 }
 
+#pragma mark - Do stuff
+
 - (void)playSelectedMessage
 {
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
@@ -232,7 +204,21 @@ typedef enum : NSUInteger {
     [self.player play];
 }
 
+- (void)updateCounts
+{
+    NSError *error;
+    NSDictionary *dic = [self.layerClient countsAround:self.selectedMessage error:&error];
+    if (dic) {
+        
+    }
+}
+
 #pragma mark - UI Handlers
+
+- (void)handleDebug
+{
+    
+}
 
 - (IBAction)handlePlayButtonTapped:(id)sender
 {
@@ -246,20 +232,38 @@ typedef enum : NSUInteger {
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
     NSError *error;
-    LYRMessage *previous = [self.layerClient messageBefore:self.selectedMessage error:&error];
-    
-    if (previous) {
-        self.selectedMessage = previous;
+    LYRMessage *next = [self.layerClient messageBefore:self.selectedMessage error:&error];
+    if (next) {
+        self.selectedMessage = next;
         [self gotoLoadingOrPlaying];
+    }
+    else {
+        if (error) {
+            [self gotoError:error];
+        }
+        else {
+            [self gotoIdle];
+        }
     }
 }
 
 - (IBAction)handleNextButtonTapped:(id)sender
 {
-
+    NSError *error;
+    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    if (next) {
+        self.selectedMessage = next;
+        [self gotoLoadingOrPlaying];
+    }
+    else {
+        if (error) {
+            [self gotoError:error];
+        }
+        else {
+            [self gotoIdle];
+        }
+    }
 }
-
-#pragma mark - AVAudioRecorderDelegate methods
 
 
 #pragma mark - AVAudioPlayerDelegate methods
@@ -267,15 +271,15 @@ typedef enum : NSUInteger {
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     NSLog(@"audioPlayerDidFinishPlaying:%@", @(flag));
-    if (flag) {
-        NSError *error;
-        LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    NSError *error;
+    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    if (next) {
+        self.selectedMessage = next;
+        [self gotoLoadingOrPlaying];
+    }
+    else {
         if (error) {
             [self gotoError:error];
-        }
-        else if (next) {
-            self.selectedMessage = next;
-            [self gotoLoadingOrPlaying];
         }
         else {
             [self gotoIdle];
@@ -321,6 +325,36 @@ typedef enum : NSUInteger {
     
     // Reset audio recorder
     [self createNewAudioRecorder];
+}
+
+- (void)createNewAudioRecorder
+{
+    NSURL *outputFileURL = [self newTemporaryFile];
+    
+    // Setup audio session
+    AVAudioSession *session = [AVAudioSession sharedInstance];
+    [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
+    
+    // Define the recorder setting
+    NSMutableDictionary *recordSetting = [[NSMutableDictionary alloc] init];
+    
+    [recordSetting setValue:[NSNumber numberWithInt:kAudioFormatMPEG4AAC] forKey:AVFormatIDKey];
+    [recordSetting setValue:[NSNumber numberWithFloat:44100.0] forKey:AVSampleRateKey];
+    [recordSetting setValue:[NSNumber numberWithInt: 2] forKey:AVNumberOfChannelsKey];
+    
+    // Initiate and prepare the recorder
+    self.recorder = [[AVAudioRecorder alloc] initWithURL:outputFileURL settings:recordSetting error:NULL];
+    self.recorder.delegate = self;
+    self.recorder.meteringEnabled = YES;
+    [self.recorder prepareToRecord];
+}
+
+- (NSURL *)newTemporaryFile
+{
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"_chat_audio.mp4"];
+    NSURL *outputFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+    
+    return outputFileURL;
 }
 
 @end
