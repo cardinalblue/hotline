@@ -33,7 +33,7 @@
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="vdf-sT-hZm"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                    <state key="normal" title="&lt;-">
+                                    <state key="normal" title="&lt;&lt;">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <userDefinedRuntimeAttributes>
@@ -54,7 +54,7 @@
                                         <constraint firstAttribute="height" constant="60" id="VGV-3R-3k4"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="30"/>
-                                    <state key="normal" title="-&gt;">
+                                    <state key="normal" title="&gt;&gt;">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <userDefinedRuntimeAttributes>
