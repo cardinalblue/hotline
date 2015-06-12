@@ -63,7 +63,7 @@
 {
     HOTConversationViewController *hotVC = [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
     hotVC.title = @"Hotline";
-    
+    hotVC.conversation = self.conversation;
     [self.navigationController pushViewController:hotVC animated:YES];
 }
 
