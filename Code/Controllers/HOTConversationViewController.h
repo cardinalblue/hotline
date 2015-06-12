@@ -7,7 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+@import LayerKit;
 
 @interface HOTConversationViewController : UIViewController
+
++ (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
+
+@property (nonatomic) LYRConversation *conversation;
+
 
 @end
