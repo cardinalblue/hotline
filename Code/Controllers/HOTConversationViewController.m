@@ -124,6 +124,7 @@ typedef enum : NSUInteger {
         [self gotoError:error];
     }
     else {
+        NSLog(@">>>> PlayStateLoading");
         self.state = PlayStateLoading;
         self.playButton.titleLabel.text = @"Play (loading...)";
     }
@@ -131,6 +132,7 @@ typedef enum : NSUInteger {
 
 - (void)gotoPlaying
 {
+    NSLog(@">>>> PlayStatePlaying");
     self.state = PlayStatePlaying;
     
     self.playButton.titleLabel.text = @"Pause";
@@ -140,6 +142,7 @@ typedef enum : NSUInteger {
 
 - (void)gotoIdle
 {
+    NSLog(@">>>> PlayStateIdle");
     self.state = PlayStateIdle;
     
     self.playButton.titleLabel.text = @"Play (idle)";
@@ -147,6 +150,7 @@ typedef enum : NSUInteger {
 
 - (void)gotoPaused
 {
+    NSLog(@">>>> PlayStatePaused");
     self.state = PlayStatePaused;
     
     [self.player pause];
