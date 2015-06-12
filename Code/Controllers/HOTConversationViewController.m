@@ -81,13 +81,18 @@ typedef enum : NSUInteger {
 
     // Initialize selected message to the last unread.
     NSError *error;
-    self.selectedMessage = [self.layerClient firstUnreadFromConversation:self.conversation
+    LYRMessage *next = [self.layerClient firstUnreadFromConversation:self.conversation
                                                                    error:&error];
-    if (!self.selectedMessage) {
-        NSLog(@"Error getting initial selected message: %@",error);
-        [self gotoError];
-    } else {
+    if (next) {
         [self gotoLoadingOrPlaying];
+    }
+    else {
+        if (error) {
+            [self gotoError:error];
+        }
+        else {
+            [self gotoIdle];
+        }
     }
 }
 
@@ -102,12 +107,12 @@ typedef enum : NSUInteger {
     
 }
 
-- (void)gotoError
+- (void)gotoError:(NSError *)error
 {
     self.state = PlayStateError;
     self.playButton.titleLabel.text = @"ERROR";
+    NSLog(@">>>>>>>>>> ERROR %@", error);
 
-    // Display something
 }
 
 - (void)gotoLoading
@@ -116,7 +121,7 @@ typedef enum : NSUInteger {
     NSError *error;
     LYRProgress *progress = [part downloadContent:&error];
     if (!progress) {
-        [self gotoError];
+        [self gotoError:error];
     }
     else {
         self.state = PlayStateLoading;
@@ -143,6 +148,7 @@ typedef enum : NSUInteger {
 - (void)gotoPaused
 {
     self.state = PlayStatePaused;
+    
     [self.player pause];
     
     self.playButton.titleLabel.text = @"Play (paused)";
@@ -187,6 +193,8 @@ typedef enum : NSUInteger {
 // is in the waiting state.
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification
 {
+    NSLog(@"didReceiveLayerObjectsDidChangeNotification:%@", notification);
+    
     if (self.state == PlayStateLoading) {
         [self gotoLoadingOrPlaying];
     } else if (self.state == PlayStateIdle) {
@@ -199,8 +207,9 @@ typedef enum : NSUInteger {
         else {
             next = [self.layerClient messageAfter:self.selectedMessage error:&error];
         }
-        if (error)
-            [self gotoError];
+        if (error) {
+            [self gotoError:error];
+        }
         else if (next) {
             self.selectedMessage = next;
             [self gotoLoadingOrPlaying];
@@ -252,11 +261,14 @@ typedef enum : NSUInteger {
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
+    NSLog(@"audioPlayerDidFinishPlaying:%@", @(flag));
     if (flag) {
         NSError *error;
         LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
-        
-        if (next) {
+        if (error) {
+            [self gotoError:error];
+        }
+        else if (next) {
             self.selectedMessage = next;
             [self gotoLoadingOrPlaying];
         }
