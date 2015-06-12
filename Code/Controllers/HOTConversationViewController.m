@@ -6,8 +6,10 @@
 //  Copyright (c) 2015年 Layer. All rights reserved.
 //
 
-#import "HOTConversationViewController.h"
+#import <Parse/Parse.h>
 @import LayerKit;
+
+#import "HOTConversationViewController.h"
 
 typedef enum : NSUInteger {
     ChatStatusIdle = 0,
@@ -42,6 +44,13 @@ typedef enum : NSUInteger {
         _layerClient = layerClient;
         [self initialize];
     }
+    
+    // Special kludge to make sure all User's have an avatar
+    [PFCloud callFunctionInBackground:@"createUserAvatar"
+                       withParameters:@{} block:^(id object, NSError *error) {
+                           NSLog(@"createUserAvatar %@ %@", object, error);
+                       }];
+    
     return self;
 }
 
