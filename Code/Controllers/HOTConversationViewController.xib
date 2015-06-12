@@ -23,25 +23,10 @@
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dw6-17-n3q">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="204"/>
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="284"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iVT-Et-1Xb">
-                                    <rect key="frame" x="100" y="72" width="120" height="60"/>
-                                    <color key="backgroundColor" red="0.86666667460000002" green="0.9529411793" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                    <constraints>
-                                        <constraint firstAttribute="width" constant="120" id="Esz-zh-BDh"/>
-                                        <constraint firstAttribute="height" constant="60" id="lsJ-AE-3sF"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="32"/>
-                                    <state key="normal" title="Play">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="handlePlayButtonTapped:" destination="-1" eventType="touchUpInside" id="MRj-V6-1fC"/>
-                                    </connections>
-                                </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v4z-4w-Rnp">
-                                    <rect key="frame" x="20" y="72" width="60" height="60"/>
+                                    <rect key="frame" x="20" y="112" width="60" height="60"/>
                                     <color key="backgroundColor" red="0.086274509799999996" green="0.74901960779999999" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="60" id="ENo-BG-F5s"/>
@@ -51,12 +36,18 @@
                                     <state key="normal" title="&lt;-">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="5"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="07A-cj-jYN"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2hW-Ck-Q2g">
-                                    <rect key="frame" x="240" y="72" width="60" height="60"/>
+                                    <rect key="frame" x="240" y="112" width="60" height="60"/>
                                     <color key="backgroundColor" red="0.086274509799999996" green="0.74901960779999999" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="60" id="A98-RC-nCQ"/>
@@ -66,8 +57,35 @@
                                     <state key="normal" title="-&gt;">
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="5"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="handleNextButtonTapped:" destination="-1" eventType="touchUpInside" id="2fn-ka-tud"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iVT-Et-1Xb">
+                                    <rect key="frame" x="100" y="112" width="120" height="60"/>
+                                    <color key="backgroundColor" red="0.86666667460000002" green="0.9529411793" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="120" id="Esz-zh-BDh"/>
+                                        <constraint firstAttribute="height" constant="60" id="lsJ-AE-3sF"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                    <state key="normal" title="Play">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="5"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="handlePlayButtonTapped:" destination="-1" eventType="touchUpInside" id="MRj-V6-1fC"/>
                                     </connections>
                                 </button>
                             </subviews>
@@ -76,7 +94,7 @@
                                 <constraint firstAttribute="centerX" secondItem="iVT-Et-1Xb" secondAttribute="centerX" id="0hv-HD-hSK"/>
                                 <constraint firstItem="2hW-Ck-Q2g" firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="2eT-Sc-U0X"/>
                                 <constraint firstItem="iVT-Et-1Xb" firstAttribute="leading" secondItem="v4z-4w-Rnp" secondAttribute="trailing" constant="20" id="BI6-dr-gM5"/>
-                                <constraint firstAttribute="height" constant="204" id="CfM-jI-dS2"/>
+                                <constraint firstAttribute="height" constant="284" id="CfM-jI-dS2"/>
                                 <constraint firstItem="2hW-Ck-Q2g" firstAttribute="leading" secondItem="iVT-Et-1Xb" secondAttribute="trailing" constant="20" id="DY2-hg-2Cz"/>
                                 <constraint firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="MYq-qA-H69"/>
                                 <constraint firstItem="v4z-4w-Rnp" firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="OKB-pP-DeB"/>
@@ -89,6 +107,12 @@
                             <state key="normal" title="Record">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="5"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                            </userDefinedRuntimeAttributes>
                             <connections>
                                 <action selector="handleRecordButtonTapDown:" destination="-1" eventType="touchDown" id="8Ph-To-s9R"/>
                                 <action selector="handleRecordButtonTapUpInside:" destination="-1" eventType="touchUpInside" id="5b1-9h-vbK"/>
