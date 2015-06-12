@@ -20,8 +20,13 @@
     LYRPredicate *unreadP = [LYRPredicate predicateWithProperty:@"isUnread"
                                               predicateOperator:LYRPredicateOperatorIsEqualTo
                                                           value:@(YES)];
+    // Messages must not be sent by the authenticated user
+    LYRPredicate *userP   = [LYRPredicate predicateWithProperty:@"sender.userID"
+                                              predicateOperator:LYRPredicateOperatorIsNotEqualTo
+                                                          value:self.authenticatedUserID];
+    
     query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd
-                                                        subpredicates:@[converP, unreadP]];
+                                                        subpredicates:@[converP, unreadP, userP]];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
     query.limit = 1;
     
