@@ -126,14 +126,17 @@
     
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
     if (!part) return;
+    NSError *error;
+    LYRProgress *downloadProgress = [part downloadContent:&error];
     
-    if (partWithAudio.transferStatus == LYRContentTransferReadyForDownload) {
-        // Display spinner?
-        
-        NSError *error;
-        self.progress = [partWithAudio downloadContent:&error];
-        self.progress.delegate = self;
-    }]
+//    
+//    if (partWithAudio.transferStatus == LYRContentTransferReadyForDownload) {
+//        // Display spinner?
+//        
+//        NSError *error;
+//        self.progress = [partWithAudio downloadContent:&error];
+//        self.progress.delegate = self;
+//    }]
 }
 
 - (void)progressDidChange:(LYRProgress *)progress
@@ -155,7 +158,7 @@
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
     NSError *error;
-    LYRMessage *previous = [self.layerClient messageBefore:self.selectedMessage error:error];
+    LYRMessage *previous = [self.layerClient messageBefore:self.selectedMessage error:&error];
     
     if (previous) {
         self.selectedMessage = previous;

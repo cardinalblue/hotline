@@ -10,6 +10,6 @@
 
 @interface LYRMessagePart (HOTAdditions)
 
-- (void)downloadWithCompletion:(void (^)(LYRMessagePart *part, BOOL success))completion;
+- (void)downloadWithCompletion:(void (^)(LYRMessagePart *part, BOOL success))completionBlock;
 
 @end

@@ -11,13 +11,13 @@
 
 @protocol HOTConversationManagerDelegate <NSObject>
 
-- (void)conversationManagerGotNewMessage:(
+//- (void)conversationManagerGotNewMessage:(
 
 @end
 
 @interface HOTConversationManager : NSObject
 
--(instancetype)initWithClient:(LYRClient *)client
-              andConversation:(LYRConversation *)conversation;
+//-(instancetype)initWithClient:(LYRClient *)client
+//              andConversation:(LYRConversation *)conversation;
 
 @end

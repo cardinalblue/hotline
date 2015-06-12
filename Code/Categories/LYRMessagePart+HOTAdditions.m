@@ -12,21 +12,22 @@
 @interface LYRMessagePart () <LYRProgressDelegate>
 
 @property (nonatomic, strong) LYRProgress *downloadProgress;
-@property (nonatomic, copy) void (^completion)(LYRMessagePart *part, BOOL success);
+@property (nonatomic, copy) void (^completionBlock)(LYRMessagePart *part, BOOL success);
 
 @end
 
 @implementation LYRMessagePart (HOTAdditions)
 
 SYNTHESIZE_ASC_OBJ(downloadProgress, setDownloadProgress);
+SYNTHESIZE_ASC_OBJ(completionBlock, setCompletionBlock);
 
-- (void)downloadWithCompletion:(void (^)(LYRMessagePart *part, BOOL success))completion
+- (void)downloadWithCompletion:(void (^)(LYRMessagePart *part, BOOL success))completionBlock
 {
     NSError *error;
     LYRProgress *progress = [self downloadContent:&error];
     
     if (!progress) {
-        completion(self, NO);
+        completionBlock(self, NO);
     } else {
         progress.delegate = self;
         self.downloadProgress = progress;
@@ -38,8 +39,10 @@ SYNTHESIZE_ASC_OBJ(downloadProgress, setDownloadProgress);
 - (void)progressDidChange:(LYRProgress *)progress
 {
     if (progress.completedUnitCount == progress.totalUnitCount) {
+        self.completionBlock(self,YES);
+        
         self.downloadProgress = nil;
-        self.completion = nil;
+        self.completionBlock = nil;
     }
 }
 
