@@ -84,7 +84,7 @@
             if (participants && error == nil) {
                 [self.addressBarController reloadView];
                 // TODO: Need a good way to refresh all the messages for the refreshed participants...
-                [self reloadCellsForMessagesSentByParticipantWithIdentitifier:participantIdentifier];
+                [self reloadCellsForMessagesSentByParticipantWithIdentifier:participantIdentifier];
             } else {
                 NSLog(@"Error querying for users: %@", error);
             }
