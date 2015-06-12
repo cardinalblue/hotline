@@ -53,6 +53,10 @@ static NSString *const ParseClientKeyString     = PARSE_CLIENT_KEY;
     // Initializes a LYRClient object
     NSUUID *appID = [[NSUUID alloc] initWithUUIDString:LayerAppIDString];
     LYRClient *layerClient = [LYRClient clientWithAppID:appID];
+    layerClient.autodownloadMaximumContentSize = 2 * 1024 * 1024;  // 2MB
+    layerClient.autodownloadMIMETypes = [NSSet setWithArray:@[ @"image/jpeg",
+                                                               @"audio/aac"
+                                                              ]];
     
     // Show View Controller
     ViewController *controller = [ViewController new];
