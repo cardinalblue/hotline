@@ -82,7 +82,7 @@ typedef enum : NSUInteger {
     // Initialize selected message to the last unread.
     NSError *error;
     LYRMessage *next = [self.layerClient firstUnreadFromConversation:self.conversation
-                                                                   error:&error];
+                                                               error:&error];
     if (next) {
         [self gotoLoadingOrPlaying];
     }
@@ -91,6 +91,7 @@ typedef enum : NSUInteger {
             [self gotoError:error];
         }
         else {
+            NSLog(@"Nothing unread so going idle...");
             [self gotoIdle];
         }
     }
