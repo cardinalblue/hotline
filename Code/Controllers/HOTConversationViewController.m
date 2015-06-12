@@ -10,22 +10,15 @@
 @import LayerKit;
 @import AVFoundation;
 #import "LYRClient+HOTAdditions.h"
+#import "LYRMessage+HOTAdditions.h"
 
 #import "HOTConversationViewController.h"
 
-typedef enum : NSUInteger {
-    ChatStatusIdle = 0,
-    ChatStatusAutoPlay,
-    ChatStatusPause,
-} HOTChatStatus;
-
-@interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate>
+@interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate>
 
 @property (nonatomic, strong) LYRClient *layerClient;
 
-@property (nonatomic, strong) LYRMessage *currentMessage;
-
-@property (nonatomic, assign) HOTChatStatus chatStatus;
+@property (nonatomic, strong) LYRMessage *selectedMessage;
 
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
@@ -33,6 +26,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
+
+@property (nonatomic, strong) LYRProgress *progress;
+@property (nonatomic, strong) LYRMessagePart *part;
 
 @end
 
@@ -64,7 +60,6 @@ typedef enum : NSUInteger {
 
 - (void)initialize
 {
-    self.chatStatus = ChatStatusIdle;
     [self createNewAudioRecorder];
     
     // Adds the notification observer
@@ -78,7 +73,10 @@ typedef enum : NSUInteger {
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.currentMessage = [self.layerClient firstUnreadFromConversation:self.conversation error:nil];
+
+    // Initialize selected message to the last unread.
+    self.selectedMessage = [self.layerClient firstUnreadFromConversation:self.conversation
+                                                                   error:nil];
 }
 
 - (void)handleDebug
@@ -115,51 +113,36 @@ typedef enum : NSUInteger {
     return outputFileURL;
 }
 
+// When layer objects change, the conversation view only cares if it
+// is in the waiting state.
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification
 {
     LYRMessage *latest = [self.layerClient firstUnreadFromConversation:self.conversation error:nil];
-    
-    if (self.currentMessage != latest) {
-        self.currentMessage = latest;
-    }
 }
 
-- (void)setCurrentMessage:(LYRMessage *)currentMessage
+- (void)playSelectedMessage
 {
-    _currentMessage = currentMessage;
-
-    BOOL containsAudio = NO;
-    for (LYRMessagePart *part in currentMessage.parts) {
-        if ([part.MIMEType isEqualToString:@"audio/mp4"]) {
-            containsAudio = YES;
-        }
-    }
+    if (!self.selectedMessage) return;
     
-    if (currentMessage.isUnread && containsAudio) {
-        [self playCurrentMessage];
-    }
-}
-
-- (void)playCurrentMessage
-{
-    // Check state of the view, first. i.e. is it paused?
+    LYRMessagePart *part = [self.selectedMessage partWithAudio];
+    if (!part) return;
     
-    LYRMessagePart *partWithAudio;
-    for (LYRMessagePart *part in self.currentMessage.parts) {
-        if ([part.MIMEType isEqualToString:@"audio/mp4"]) {
-            NSLog(@"%@",part);
-            partWithAudio = part;
-        }
-    }
-    
-    if (partWithAudio.transferStatus != LYRContentTransferComplete) {
+    if (partWithAudio.transferStatus == LYRContentTransferReadyForDownload) {
         // Display spinner?
         
+        NSError *error;
+        self.progress = [partWithAudio downloadContent:&error];
+        self.progress.delegate = self;
+    }]
+}
+
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    if (progress.completedUnitCount == progress.totalUnitCount) {
+        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:self.part.fileURL error:nil];
+        [self.player setDelegate:self];
+        [self.player play];
     }
-    
-    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:partWithAudio.fileURL error:nil];
-    [self.player setDelegate:self];
-    [self.player play];
 }
 
 #pragma mark - UI Handlers
@@ -171,7 +154,13 @@ typedef enum : NSUInteger {
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
+    NSError *error;
+    LYRMessage *previous = [self.layerClient messageBefore:self.selectedMessage error:error];
     
+    if (previous) {
+        self.selectedMessage = previous;
+        [self playSelectedMessage];
+    }
 }
 
 - (IBAction)handleNextButtonTapped:(id)sender
@@ -229,7 +218,5 @@ typedef enum : NSUInteger {
     // Reset audio recorder
     [self createNewAudioRecorder];
 }
-
-
 
 @end

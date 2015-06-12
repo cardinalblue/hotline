@@ -26,6 +26,9 @@
 		569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 569172401B2A892E000DF4DC /* HOTConversationViewController.m */; };
 		569172431B2A8A9D000DF4DC /* HOTConversationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */; };
 		569172451B2AB906000DF4DC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569172441B2AB906000DF4DC /* AVFoundation.framework */; };
+		569172481B2AD498000DF4DC /* HOTConversationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 569172471B2AD498000DF4DC /* HOTConversationManager.m */; };
+		5691724B1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */; };
+		5691724E1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
 		DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */; };
@@ -72,6 +75,12 @@
 		569172401B2A892E000DF4DC /* HOTConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationViewController.m; sourceTree = "<group>"; };
 		569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HOTConversationViewController.xib; sourceTree = "<group>"; };
 		569172441B2AB906000DF4DC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		569172461B2AD498000DF4DC /* HOTConversationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOTConversationManager.h; sourceTree = "<group>"; };
+		569172471B2AD498000DF4DC /* HOTConversationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationManager.m; sourceTree = "<group>"; };
+		569172491B2AD982000DF4DC /* LYRMessage+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "LYRMessage+HOTAdditions.h"; path = "../Controllers/LYRMessage+HOTAdditions.h"; sourceTree = "<group>"; };
+		5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "LYRMessage+HOTAdditions.m"; path = "../Controllers/LYRMessage+HOTAdditions.m"; sourceTree = "<group>"; };
+		5691724C1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRMessagePart+HOTAdditions.h"; sourceTree = "<group>"; };
+		5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRMessagePart+HOTAdditions.m"; sourceTree = "<group>"; };
 		5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Layer-Parse-iOS-Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Layer-Parse-iOS-ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49C031AC399DD00B1B0C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -148,10 +157,14 @@
 		25713D5A1AC6071600FC5D38 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				5691724C1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.h */,
+				5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */,
 				25713D5B1AC6071600FC5D38 /* PFUser+ATLParticipant.h */,
 				25713D5C1AC6071600FC5D38 /* PFUser+ATLParticipant.m */,
 				9503C3BC1B2AA7F20083DC10 /* LYRClient+HOTAdditions.h */,
 				9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */,
+				569172491B2AD982000DF4DC /* LYRMessage+HOTAdditions.h */,
+				5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -177,6 +190,8 @@
 		25713D671AC6071600FC5D38 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				569172461B2AD498000DF4DC /* HOTConversationManager.h */,
+				569172471B2AD498000DF4DC /* HOTConversationManager.m */,
 				25713D681AC6071600FC5D38 /* UserManager.h */,
 				25713D691AC6071600FC5D38 /* UserManager.m */,
 			);
@@ -374,9 +389,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				25713D6A1AC6071600FC5D38 /* AppDelegate.m in Sources */,
+				5691724B1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m in Sources */,
+				569172481B2AD498000DF4DC /* HOTConversationManager.m in Sources */,
 				25713D6C1AC6071600FC5D38 /* ConversationListViewController.m in Sources */,
 				25713D6B1AC6071600FC5D38 /* PFUser+ATLParticipant.m in Sources */,
 				25713D6D1AC6071600FC5D38 /* ConversationViewController.m in Sources */,
+				5691724E1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m in Sources */,
 				25713D6E1AC6071600FC5D38 /* ParticipantTableViewController.m in Sources */,
 				569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */,
 				25713D711AC6071600FC5D38 /* UserManager.m in Sources */,
