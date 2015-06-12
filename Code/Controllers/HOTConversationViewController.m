@@ -214,8 +214,8 @@ typedef enum : NSUInteger {
     NSError *error;
     NSDictionary *dic = [self.layerClient countsAround:self.selectedMessage error:&error];
     if (dic) {
-        self.previousButton.titleLabel.text = [NSString stringWithFormat:@"(%@)<<",dic[@"before"]];
-        self.nextButton.titleLabel.text = [NSString stringWithFormat:@">>(%@,%@)",dic[@"after"], dic[@"unread"]];
+        // self.previousButton.titleLabel.text = [NSString stringWithFormat:@"(%@)<<",dic[@"before"]];
+        // self.nextButton.titleLabel.text     = [NSString stringWithFormat:@">>(%@,%@)",dic[@"after"], dic[@"unread"]];
     }
 }
 
