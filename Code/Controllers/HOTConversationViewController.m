@@ -14,9 +14,19 @@
 
 #import "HOTConversationViewController.h"
 
+typedef enum : NSUInteger {
+    PlayStateIdle = 0,
+    PlayStateLoading,
+    PlayStatePlaying,
+    PlayStatePaused,
+    PlayStateError
+} PlayState;
+
 @interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate>
 
 @property (nonatomic, strong) LYRClient *layerClient;
+
+@property (nonatomic, assign) PlayState state;
 
 @property (nonatomic, strong) LYRMessage *selectedMessage;
 
@@ -45,6 +55,7 @@
     self = [super init];
     if (self) {
         _layerClient = layerClient;
+        _state = PlayStateIdle;
         
         [self initialize];
     }
@@ -75,8 +86,72 @@
     [super viewDidLoad];
 
     // Initialize selected message to the last unread.
+    NSError *error;
     self.selectedMessage = [self.layerClient firstUnreadFromConversation:self.conversation
-                                                                   error:nil];
+                                                                   error:&error];
+    if (!self.selectedMessage) {
+        NSLog(@"Error getting initial selected message: %@",error);
+        [self gotoError];
+    } else {
+        [self gotoLoadingOrPlaying];
+    }
+}
+
+- (void)gotoLoadingOrPlaying
+{
+    LYRMessagePart *part = [self.selectedMessage partWithAudio];
+    if (part.transferStatus == LYRContentTransferComplete) {
+        [self gotoPlaying];
+    } else {
+        [self gotoLoading];
+    }
+    
+}
+
+- (void)gotoError
+{
+    self.state = PlayStateError;
+    self.playButton.titleLabel.text = @"ERROR";
+
+    // Display something
+}
+
+- (void)gotoLoading
+{
+    LYRMessagePart *part = [self.selectedMessage partWithAudio];
+    NSError *error;
+    LYRProgress *progress = [part downloadContent:&error];
+    if (!progress) {
+        [self gotoError];
+    }
+    else {
+        self.state = PlayStateLoading;
+        self.playButton.titleLabel.text = @"Play (loading...)";
+    }
+}
+
+- (void)gotoPlaying
+{
+    self.state = PlayStatePlaying;
+    
+    self.playButton.titleLabel.text = @"Pause";
+    
+    [self playSelectedMessage];
+}
+
+- (void)gotoIdle
+{
+    self.state = PlayStateIdle;
+    
+    self.playButton.titleLabel.text = @"Play (idle)";
+}
+
+- (void)gotoPaused
+{
+    self.state = PlayStatePaused;
+    [self.player pause];
+    
+    self.playButton.titleLabel.text = @"Play (paused)";
 }
 
 - (void)handleDebug
@@ -117,42 +192,46 @@
 // is in the waiting state.
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification
 {
-    LYRMessage *latest = [self.layerClient firstUnreadFromConversation:self.conversation error:nil];
+    if (self.state == PlayStateLoading) {
+        [self gotoLoadingOrPlaying];
+    } else if (self.state == PlayStateIdle) {
+        
+        NSError *error;
+        LYRMessage *next;
+        if (!self.selectedMessage ) {
+            next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
+        }
+        else {
+            next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+        }
+        if (error)
+            [self gotoError];
+        else if (next) {
+            self.selectedMessage = next;
+            [self gotoLoadingOrPlaying];
+        }
+    }
 }
 
 - (void)playSelectedMessage
 {
-    if (!self.selectedMessage) return;
-    
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
-    if (!part) return;
     NSError *error;
-    LYRProgress *downloadProgress = [part downloadContent:&error];
     
-//    
-//    if (partWithAudio.transferStatus == LYRContentTransferReadyForDownload) {
-//        // Display spinner?
-//        
-//        NSError *error;
-//        self.progress = [partWithAudio downloadContent:&error];
-//        self.progress.delegate = self;
-//    }]
-}
-
-- (void)progressDidChange:(LYRProgress *)progress
-{
-    if (progress.completedUnitCount == progress.totalUnitCount) {
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:self.part.fileURL error:nil];
-        [self.player setDelegate:self];
-        [self.player play];
-    }
+    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:part.fileURL error:&error];
+    [self.player setDelegate:self];
+    [self.player play];
 }
 
 #pragma mark - UI Handlers
 
 - (IBAction)handlePlayButtonTapped:(id)sender
 {
-    
+    if (self.state == PlayStatePlaying) {
+        [self gotoPaused];
+    } else if (self.state == PlayStatePaused) {
+        [self gotoPlaying];
+    }
 }
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
@@ -179,7 +258,16 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     if (flag) {
+        NSError *error;
+        LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
         
+        if (next) {
+            self.selectedMessage = next;
+            [self gotoLoadingOrPlaying];
+        }
+        else {
+            [self gotoIdle];
+        }
     }
 }
 
