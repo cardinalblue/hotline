@@ -24,6 +24,7 @@
 #import <SVProgressHUD/SVProgressHUD.h>
 #import "UserManager.h"
 #import <ATLConstants.h>
+#import "HOTConversationViewController.h"
 
 @interface ConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource>
 
@@ -52,9 +53,9 @@
 
 - (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
-    ConversationViewController *controller = [ConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    HOTConversationViewController *controller = [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
     controller.conversation = conversation;
-    controller.displaysAddressBar = YES;
+//    controller.displaysAddressBar = YES;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -116,8 +117,8 @@
 
 - (void)composeButtonTapped:(id)sender
 {
-    ConversationViewController *controller = [ConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
-    controller.displaysAddressBar = YES;
+    HOTConversationViewController *controller = [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+//    controller.displaysAddressBar = YES;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
