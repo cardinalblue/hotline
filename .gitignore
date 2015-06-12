@@ -5,3 +5,5 @@ Podfile.lock
 xcuserdata
 *.xcworkspace/xcshareddata
 xcodebuild.log
+
+Keys.h

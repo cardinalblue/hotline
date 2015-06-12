@@ -23,13 +23,13 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 
+#import "Keys.h"
+
 @implementation AppDelegate
 
-#pragma mark TODO: Before first launch, update LayerAppIDString, ParseAppIDString or ParseClientKeyString values
-#warning "TODO:If LayerAppIDString, ParseAppIDString or ParseClientKeyString are nil, this app will crash"
-static NSString *const LayerAppIDString = nil;
-static NSString *const ParseAppIDString = nil;
-static NSString *const ParseClientKeyString = nil;
+static NSString *const LayerAppIDString         = LAYER_APP_ID;
+static NSString *const ParseAppIDString         = PARSE_APP_ID;
+static NSString *const ParseClientKeyString     = PARSE_CLIENT_KEY;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
