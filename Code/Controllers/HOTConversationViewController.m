@@ -250,7 +250,7 @@ typedef enum : NSUInteger {
     
     if (previous) {
         self.selectedMessage = previous;
-        [self playSelectedMessage];
+        [self gotoLoadingOrPlaying];
     }
 }
 
