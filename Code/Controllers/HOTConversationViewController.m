@@ -208,6 +208,9 @@ typedef enum : NSUInteger {
 
 - (void)updateCounts
 {
+    if (!self.selectedMessage)
+        return;
+    
     NSError *error;
     NSDictionary *dic = [self.layerClient countsAround:self.selectedMessage error:&error];
     if (dic) {
