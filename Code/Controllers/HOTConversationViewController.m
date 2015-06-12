@@ -66,7 +66,7 @@ typedef enum : NSUInteger {
                                              selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                  name:LYRClientObjectsDidChangeNotification object:self.layerClient];
     
-      self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Debug" style:UIBarButtonItemStylePlain target:self action:@selector(handleDebug)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Debug" style:UIBarButtonItemStylePlain target:self action:@selector(handleDebug)];
 }
 
 - (void)viewDidLoad
@@ -83,6 +83,7 @@ typedef enum : NSUInteger {
 - (void)createNewAudioRecorder
 {
     NSURL *outputFileURL = [self newTemporaryFile];
+    
     // Setup audio session
     AVAudioSession *session = [AVAudioSession sharedInstance];
     [session setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
@@ -210,7 +211,8 @@ typedef enum : NSUInteger {
     [self.recorder stop];
     NSURL *recordingURL = self.recorder.url;
     
-    LYRMessagePart *audioPart = [LYRMessagePart messagePartWithMIMEType:@"audio/mp4" data:[NSData dataWithContentsOfURL:recordingURL]];
+    LYRMessagePart *audioPart = [LYRMessagePart messagePartWithMIMEType:@"audio/mp4"
+                                                                   data:[NSData dataWithContentsOfURL:recordingURL]];
 
     NSError *error;
     LYRMessage *message = [self.layerClient newMessageWithParts:@[audioPart] options:nil error:&error];
