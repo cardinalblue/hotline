@@ -55,7 +55,7 @@ static NSString *const ParseClientKeyString     = PARSE_CLIENT_KEY;
     LYRClient *layerClient = [LYRClient clientWithAppID:appID];
     layerClient.autodownloadMaximumContentSize = 2 * 1024 * 1024;  // 2MB
     layerClient.autodownloadMIMETypes = [NSSet setWithArray:@[ @"image/jpeg",
-                                                               @"audio/aac"
+                                                               @"audio/mp4"
                                                               ]];
     
     // Show View Controller
