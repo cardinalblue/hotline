@@ -78,21 +78,32 @@
 {
     LYRQuery *query;
     
-    LYRPredicate *converP = [LYRPredicate predicateWithProperty:@"conversation"
-                                              predicateOperator:LYRPredicateOperatorIsEqualTo
-                                                          value:previousMessage.conversation];
-    LYRPredicate *posP    = [LYRPredicate predicateWithProperty:@"position"
-                                              predicateOperator:LYRPredicateOperatorIsGreaterThan
-                                                          value:[NSNumber numberWithLongLong:previousMessage.position]];
-    LYRPredicate *unreadP = [LYRPredicate predicateWithProperty:@"isUnread"
-                                              predicateOperator:LYRPredicateOperatorIsEqualTo
-                                                          value:@(YES)];
+    LYRPredicate *converP  = [LYRPredicate predicateWithProperty:@"conversation"
+                                               predicateOperator:LYRPredicateOperatorIsEqualTo
+                                                           value:previousMessage.conversation];
+    LYRPredicate *posPrevP = [LYRPredicate predicateWithProperty:@"position"
+                                               predicateOperator:LYRPredicateOperatorIsGreaterThan
+                                                           value:[NSNumber numberWithLongLong:previousMessage.position]];
+    LYRPredicate *posPostP = [LYRPredicate predicateWithProperty:@"position"
+                                               predicateOperator:LYRPredicateOperatorIsLessThan
+                                                           value:[NSNumber numberWithLongLong:previousMessage.position]];
+    LYRPredicate *unreadP  = [LYRPredicate predicateWithProperty:@"isUnread"
+                                               predicateOperator:LYRPredicateOperatorIsEqualTo
+                                                           value:@(YES)];
     
     // ----
     query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
     query.resultType = LYRQueryResultTypeCount;
     query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd
-                                                        subpredicates:@[converP, posP]];
+                                                        subpredicates:@[converP, posPrevP]];
+    NSUInteger countBefore = [self countForQuery:query error:error];
+    if (*error) return nil;
+
+    // ----
+    query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+    query.resultType = LYRQueryResultTypeCount;
+    query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd
+                                                        subpredicates:@[converP, posPostP]];
     NSUInteger countAfter = [self countForQuery:query error:error];
     if (*error) return nil;
     
@@ -100,13 +111,14 @@
     query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
     query.resultType = LYRQueryResultTypeCount;
     query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd
-                                                        subpredicates:@[converP, posP, unreadP]];
+                                                        subpredicates:@[converP, posPostP, unreadP]];
     NSUInteger countUnread = [self countForQuery:query error:error];
     if (*error) return nil;
     
     return @{
-             @"after":     [NSNumber numberWithUnsignedInteger:countAfter],
-             @"unread":    [NSNumber numberWithUnsignedInteger:countUnread]
+             @"before":    @(countBefore),
+             @"after":     @(countAfter),
+             @"unread":    @(countUnread)
              };
 }
 @end
