@@ -101,7 +101,7 @@
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XrF-HJ-OWi">
-                            <rect key="frame" x="0.0" y="284" width="320" height="284"/>
+                            <rect key="frame" x="10" y="274" width="300" height="284"/>
                             <color key="backgroundColor" red="1" green="0.27058824896812439" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <fontDescription key="fontDescription" type="system" pointSize="30"/>
                             <state key="normal" title="Record">
@@ -123,12 +123,12 @@
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstItem="XrF-HJ-OWi" firstAttribute="height" secondItem="cNV-aT-e1x" secondAttribute="height" multiplier="0.5" id="5wd-Gt-awy"/>
-                        <constraint firstItem="XrF-HJ-OWi" firstAttribute="leading" secondItem="cNV-aT-e1x" secondAttribute="leading" id="GKa-nK-0qS"/>
+                        <constraint firstItem="XrF-HJ-OWi" firstAttribute="leading" secondItem="cNV-aT-e1x" secondAttribute="leading" constant="10" id="GKa-nK-0qS"/>
                         <constraint firstItem="Dw6-17-n3q" firstAttribute="top" secondItem="cNV-aT-e1x" secondAttribute="top" id="JKM-hc-GBm"/>
                         <constraint firstAttribute="trailing" secondItem="Dw6-17-n3q" secondAttribute="trailing" id="NFt-Hr-ypG"/>
-                        <constraint firstAttribute="bottom" secondItem="XrF-HJ-OWi" secondAttribute="bottom" id="Xck-HU-Uod"/>
+                        <constraint firstAttribute="bottom" secondItem="XrF-HJ-OWi" secondAttribute="bottom" constant="10" id="Xck-HU-Uod"/>
                         <constraint firstItem="Dw6-17-n3q" firstAttribute="leading" secondItem="cNV-aT-e1x" secondAttribute="leading" id="v4d-VK-bQC"/>
-                        <constraint firstAttribute="trailing" secondItem="XrF-HJ-OWi" secondAttribute="trailing" id="vB4-wV-L1m"/>
+                        <constraint firstAttribute="trailing" secondItem="XrF-HJ-OWi" secondAttribute="trailing" constant="10" id="vB4-wV-L1m"/>
                     </constraints>
                 </view>
             </subviews>
