@@ -25,6 +25,7 @@
 		25713D711AC6071600FC5D38 /* UserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D691AC6071600FC5D38 /* UserManager.m */; };
 		569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 569172401B2A892E000DF4DC /* HOTConversationViewController.m */; };
 		569172431B2A8A9D000DF4DC /* HOTConversationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */; };
+		569172451B2AB906000DF4DC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569172441B2AB906000DF4DC /* AVFoundation.framework */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
 		DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */; };
@@ -70,6 +71,7 @@
 		5691723F1B2A892E000DF4DC /* HOTConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOTConversationViewController.h; sourceTree = "<group>"; };
 		569172401B2A892E000DF4DC /* HOTConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationViewController.m; sourceTree = "<group>"; };
 		569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HOTConversationViewController.xib; sourceTree = "<group>"; };
+		569172441B2AB906000DF4DC /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Layer-Parse-iOS-Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Layer-Parse-iOS-ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49C031AC399DD00B1B0C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				569172451B2AB906000DF4DC /* AVFoundation.framework in Frameworks */,
 				DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -105,6 +108,7 @@
 		18E51EBCB0F1A5E9BFBD3CE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				569172441B2AB906000DF4DC /* AVFoundation.framework */,
 				8C01F0B0A4201AA564136B47 /* libPods-LayerParseSampleApp.a */,
 				0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */,
 			);

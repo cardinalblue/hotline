@@ -24,6 +24,7 @@
 #import "ConversationViewController.h"
 #import "ParticipantTableViewController.h"
 #import "UserManager.h"
+#import "HOTConversationViewController.h"
 
 @interface ConversationViewController () <ATLConversationViewControllerDataSource, ATLConversationViewControllerDelegate, ATLParticipantTableViewControllerDelegate>
 
@@ -54,6 +55,16 @@
 - (void)configureUI
 {
     [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
+    
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Hotline" style:UIBarButtonItemStylePlain target:self action:@selector(handleHotlineButtonPressed:)];
+}
+
+- (void)handleHotlineButtonPressed:(id)sender
+{
+    HOTConversationViewController *hotVC = [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    hotVC.title = @"Hotline";
+    hotVC.conversation = self.conversation;
+    [self.navigationController pushViewController:hotVC animated:YES];
 }
 
 #pragma mark - ATLConversationViewControllerDelegate methods

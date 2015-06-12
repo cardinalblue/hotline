@@ -15,5 +15,4 @@
 
 @property (nonatomic) LYRConversation *conversation;
 
-
 @end
