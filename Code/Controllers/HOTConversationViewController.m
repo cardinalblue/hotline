@@ -13,6 +13,7 @@
 #import "LYRMessage+HOTAdditions.h"
 #import <QuartzCore/QuartzCore.h>
 
+#import "ConversationViewController.h"
 #import "HOTConversationViewController.h"
 
 typedef enum : NSUInteger {
@@ -72,12 +73,18 @@ typedef enum : NSUInteger {
                                              selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                  name:LYRClientObjectsDidChangeNotification object:self.layerClient];
     
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Debug" style:UIBarButtonItemStylePlain target:self action:@selector(handleDebug)];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:@"Debug"
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(handleDebug)];
+    
 
     // Initialize selected message to the last unread.
     NSError *error;
@@ -246,6 +253,12 @@ typedef enum : NSUInteger {
 - (void)handleDebug
 {
     
+    ConversationViewController *controller =
+        [ConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    controller.conversation = self.conversation;
+    controller.displaysAddressBar = YES;
+    [self.navigationController pushViewController:controller animated:YES];
+    
 }
 
 - (IBAction)handlePlayButtonTapped:(id)sender
@@ -298,19 +311,28 @@ typedef enum : NSUInteger {
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     NSLog(@"audioPlayerDidFinishPlaying:%@", @(flag));
-    NSError *error;
-    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
-    if (next) {
-        self.selectedMessage = next;
-        [self updateCounts];
-        [self gotoLoadingOrPlaying];
+    
+    if (!self.selectedMessage) {
+        [self gotoIdle];
     }
     else {
-        if (error) {
-            [self gotoError:error];
+        
+        [self.selectedMessage markAsRead:nil];
+        
+        NSError *error;
+        LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+        if (next) {
+            self.selectedMessage = next;
+            [self updateCounts];
+            [self gotoLoadingOrPlaying];
         }
         else {
-            [self gotoIdle];
+            if (error) {
+                [self gotoError:error];
+            }
+            else {
+                [self gotoIdle];
+            }
         }
     }
 }

@@ -25,6 +25,8 @@
 #import "UserManager.h"
 #import <ATLConstants.h>
 
+#import "HOTConversationViewController.h"
+
 @interface ConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource>
 
 @end
@@ -50,12 +52,14 @@
 
 #pragma mark - ATLConversationListViewControllerDelegate Methods
 
-- (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
+- (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController
+                 didSelectConversation:(LYRConversation *)conversation
 {
-    ConversationViewController *controller = [ConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
-    controller.conversation = conversation;
-    controller.displaysAddressBar = YES;
-    [self.navigationController pushViewController:controller animated:YES];
+    HOTConversationViewController *hotVC =
+        [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    hotVC.title = @"Hotline";
+    hotVC.conversation = conversation;
+    [self.navigationController pushViewController:hotVC animated:YES];
 }
 
 - (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode

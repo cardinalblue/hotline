@@ -55,13 +55,12 @@
 - (void)configureUI
 {
     [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-    
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Hotline" style:UIBarButtonItemStylePlain target:self action:@selector(handleHotlineButtonPressed:)];
 }
 
 - (void)handleHotlineButtonPressed:(id)sender
 {
-    HOTConversationViewController *hotVC = [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    HOTConversationViewController *hotVC =
+        [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
     hotVC.title = @"Hotline";
     hotVC.conversation = self.conversation;
     [self.navigationController pushViewController:hotVC animated:YES];
