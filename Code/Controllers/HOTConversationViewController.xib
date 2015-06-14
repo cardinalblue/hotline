@@ -8,6 +8,9 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HOTConversationViewController">
             <connections>
+                <outlet property="countNext" destination="eKK-EZ-Xmo" id="rM1-dm-5er"/>
+                <outlet property="countPrev" destination="EaH-wD-Lfl" id="qI1-lS-7Al"/>
+                <outlet property="countUnread" destination="gMh-OZ-8Ip" id="kaV-iL-sFl"/>
                 <outlet property="nextButton" destination="2hW-Ck-Q2g" id="xQJ-Nn-QfW"/>
                 <outlet property="playButton" destination="iVT-Et-1Xb" id="Whm-fQ-4hK"/>
                 <outlet property="previousButton" destination="v4z-4w-Rnp" id="1Vc-zQ-irj"/>
@@ -25,36 +28,92 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dw6-17-n3q">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="284"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v4z-4w-Rnp">
-                                    <rect key="frame" x="20" y="112" width="60" height="60"/>
-                                    <color key="backgroundColor" red="0.086274509799999996" green="0.74901960779999999" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaH-wD-Lfl" userLabel="countPrev">
+                                    <rect key="frame" x="-10" y="130" width="30" height="24"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="0">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="GYX-7e-vJ4"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eKK-EZ-Xmo" userLabel="countNext">
+                                    <rect key="frame" x="300" y="130" width="30" height="24"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="0">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="L6A-gB-WnJ"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMh-OZ-8Ip" userLabel="countUnread">
+                                    <rect key="frame" x="300" y="164" width="30" height="24"/>
+                                    <color key="backgroundColor" red="1" green="0.270588249" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <state key="normal" title="0">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </state>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                            <integer key="value" value="10"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                    </userDefinedRuntimeAttributes>
+                                    <connections>
+                                        <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="iE2-27-gpa"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="v4z-4w-Rnp" userLabel="skipPrev">
+                                    <rect key="frame" x="30" y="112" width="60" height="60"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="60" id="mvG-54-o0q"/>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="vdf-sT-hZm"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                     <state key="normal" title="&lt;&lt;">
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     </state>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
                                             <integer key="value" value="5"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                            <integer key="value" value="3"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="layer.borderUIColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="07A-cj-jYN"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2hW-Ck-Q2g">
-                                    <rect key="frame" x="240" y="112" width="60" height="60"/>
-                                    <color key="backgroundColor" red="0.086274509799999996" green="0.74901960779999999" blue="0.73725490199999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2hW-Ck-Q2g" userLabel="skipNext">
+                                    <rect key="frame" x="230" y="112" width="60" height="60"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="60" id="A98-RC-nCQ"/>
                                         <constraint firstAttribute="height" constant="60" id="VGV-3R-3k4"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                     <state key="normal" title="&gt;&gt;">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <userDefinedRuntimeAttributes>
@@ -62,20 +121,27 @@
                                             <integer key="value" value="5"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                            <integer key="value" value="3"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="layer.borderUIColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="handleNextButtonTapped:" destination="-1" eventType="touchUpInside" id="2fn-ka-tud"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iVT-Et-1Xb">
-                                    <rect key="frame" x="100" y="112" width="120" height="60"/>
-                                    <color key="backgroundColor" red="0.86666667460000002" green="0.9529411793" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iVT-Et-1Xb" userLabel="playButton">
+                                    <rect key="frame" x="110" y="112" width="100" height="60"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     <constraints>
-                                        <constraint firstAttribute="width" constant="120" id="Esz-zh-BDh"/>
+                                        <constraint firstAttribute="width" constant="100" id="Esz-zh-BDh"/>
                                         <constraint firstAttribute="height" constant="60" id="lsJ-AE-3sF"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                     <state key="normal" title="_">
+                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <userDefinedRuntimeAttributes>
@@ -83,35 +149,53 @@
                                             <integer key="value" value="5"/>
                                         </userDefinedRuntimeAttribute>
                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                            <integer key="value" value="3"/>
+                                        </userDefinedRuntimeAttribute>
+                                        <userDefinedRuntimeAttribute type="color" keyPath="layer.borderUIColor">
+                                            <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="handlePlayButtonTapped:" destination="-1" eventType="touchUpInside" id="MRj-V6-1fC"/>
                                     </connections>
                                 </button>
                             </subviews>
-                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="centerX" secondItem="iVT-Et-1Xb" secondAttribute="centerX" id="0hv-HD-hSK"/>
                                 <constraint firstItem="2hW-Ck-Q2g" firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="2eT-Sc-U0X"/>
+                                <constraint firstItem="v4z-4w-Rnp" firstAttribute="leading" secondItem="EaH-wD-Lfl" secondAttribute="trailing" constant="10" id="9cC-89-LkN"/>
                                 <constraint firstItem="iVT-Et-1Xb" firstAttribute="leading" secondItem="v4z-4w-Rnp" secondAttribute="trailing" constant="20" id="BI6-dr-gM5"/>
-                                <constraint firstAttribute="height" constant="284" id="CfM-jI-dS2"/>
                                 <constraint firstItem="2hW-Ck-Q2g" firstAttribute="leading" secondItem="iVT-Et-1Xb" secondAttribute="trailing" constant="20" id="DY2-hg-2Cz"/>
+                                <constraint firstAttribute="centerY" secondItem="eKK-EZ-Xmo" secondAttribute="centerY" id="G4g-rB-0Zp"/>
                                 <constraint firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="MYq-qA-H69"/>
                                 <constraint firstItem="v4z-4w-Rnp" firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="OKB-pP-DeB"/>
+                                <constraint firstAttribute="centerY" secondItem="EaH-wD-Lfl" secondAttribute="centerY" id="QHo-Ck-RkZ"/>
+                                <constraint firstItem="gMh-OZ-8Ip" firstAttribute="top" secondItem="eKK-EZ-Xmo" secondAttribute="bottom" constant="10" id="a2k-E7-SrI"/>
+                                <constraint firstItem="gMh-OZ-8Ip" firstAttribute="leading" secondItem="2hW-Ck-Q2g" secondAttribute="trailing" constant="10" id="tmi-Od-wNY"/>
+                                <constraint firstItem="eKK-EZ-Xmo" firstAttribute="leading" secondItem="2hW-Ck-Q2g" secondAttribute="trailing" constant="10" id="wyP-kh-wSE"/>
                             </constraints>
                         </view>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XrF-HJ-OWi">
                             <rect key="frame" x="10" y="274" width="300" height="284"/>
-                            <color key="backgroundColor" red="1" green="0.27058824896812439" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <fontDescription key="fontDescription" type="system" pointSize="30"/>
                             <state key="normal" title="Record">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                    <integer key="value" value="5"/>
+                                    <integer key="value" value="8"/>
                                 </userDefinedRuntimeAttribute>
                                 <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.borderWidth">
+                                    <integer key="value" value="3"/>
+                                </userDefinedRuntimeAttribute>
+                                <userDefinedRuntimeAttribute type="color" keyPath="layer.borderUIColor">
+                                    <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                </userDefinedRuntimeAttribute>
                             </userDefinedRuntimeAttributes>
                             <connections>
                                 <action selector="handleRecordButtonTapDown:" destination="-1" eventType="touchDown" id="8Ph-To-s9R"/>
@@ -120,13 +204,14 @@
                             </connections>
                         </button>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstItem="XrF-HJ-OWi" firstAttribute="height" secondItem="cNV-aT-e1x" secondAttribute="height" multiplier="0.5" id="5wd-Gt-awy"/>
                         <constraint firstItem="XrF-HJ-OWi" firstAttribute="leading" secondItem="cNV-aT-e1x" secondAttribute="leading" constant="10" id="GKa-nK-0qS"/>
                         <constraint firstItem="Dw6-17-n3q" firstAttribute="top" secondItem="cNV-aT-e1x" secondAttribute="top" id="JKM-hc-GBm"/>
                         <constraint firstAttribute="trailing" secondItem="Dw6-17-n3q" secondAttribute="trailing" id="NFt-Hr-ypG"/>
                         <constraint firstAttribute="bottom" secondItem="XrF-HJ-OWi" secondAttribute="bottom" constant="10" id="Xck-HU-Uod"/>
+                        <constraint firstItem="Dw6-17-n3q" firstAttribute="height" secondItem="cNV-aT-e1x" secondAttribute="height" multiplier="0.5" id="dGf-Hd-FDf"/>
                         <constraint firstItem="Dw6-17-n3q" firstAttribute="leading" secondItem="cNV-aT-e1x" secondAttribute="leading" id="v4d-VK-bQC"/>
                         <constraint firstAttribute="trailing" secondItem="XrF-HJ-OWi" secondAttribute="trailing" constant="10" id="vB4-wV-L1m"/>
                     </constraints>
@@ -139,7 +224,7 @@
                 <constraint firstAttribute="bottom" secondItem="cNV-aT-e1x" secondAttribute="bottom" id="Y2a-gV-7qq"/>
                 <constraint firstItem="cNV-aT-e1x" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="gEn-fR-r59"/>
             </constraints>
-            <point key="canvasLocation" x="304" y="184"/>
+            <point key="canvasLocation" x="326" y="198"/>
         </view>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
