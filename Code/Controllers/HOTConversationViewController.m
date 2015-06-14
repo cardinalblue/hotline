@@ -36,6 +36,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
 @property (nonatomic, weak) IBOutlet UIButton *playButton;
 
+@property (nonatomic, weak) IBOutlet UIButton *countPrev;
+@property (nonatomic, weak) IBOutlet UIButton *countNext;
+@property (nonatomic, weak) IBOutlet UIButton *countUnread;
+
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
 
@@ -86,6 +90,8 @@ typedef enum : NSUInteger {
                                         action:@selector(handleDebug)];
     
 
+    [self updateCounts];
+    
     // Initialize selected message to the last unread.
     NSError *error;
     LYRMessage *next = [self.layerClient firstUnreadFromConversation:self.conversation
@@ -244,8 +250,16 @@ typedef enum : NSUInteger {
     NSError *error;
     NSDictionary *dic = [self.layerClient countsAround:self.selectedMessage error:&error];
     if (dic) {
-        // self.previousButton.titleLabel.text = [NSString stringWithFormat:@"(%@)<<",dic[@"before"]];
-        // self.nextButton.titleLabel.text     = [NSString stringWithFormat:@">>(%@,%@)",dic[@"after"], dic[@"unread"]];
+        NSString *t;
+
+        t = [NSString stringWithFormat:@"%@", dic[@"before"]];
+        [self.countPrev setTitle:t forState:UIControlStateNormal];
+
+        t = [NSString stringWithFormat:@"%@", dic[@"after"]];
+        [self.countNext setTitle:t forState:UIControlStateNormal];
+        
+        t = [NSString stringWithFormat:@"%@", dic[@"unread"]];
+        [self.countUnread setTitle:t forState:UIControlStateNormal];
     }
 }
 #pragma mark - UI Handlers
