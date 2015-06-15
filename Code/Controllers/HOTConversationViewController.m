@@ -42,6 +42,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
 @property (nonatomic, weak) IBOutlet UIButton *countUnread;
 @property (weak, nonatomic) IBOutlet UILabel  *playingLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
@@ -133,7 +134,7 @@ typedef enum : NSUInteger {
     NSLog(@">>>> gotoLoadingOrPlaying");
     NSAssert(self.selectedMessage, @"gotoLoadingOrPlaying no selectedMessage");
     
-    [self updatePlayingLabel];
+    [self updatePlayingDisplay];
     
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
     if (!part) {
@@ -319,7 +320,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)updatePlayingLabel
+- (void)updatePlayingDisplay
 {
     if (!self.selectedMessage) {
         self.playingLabel.hidden = YES;
@@ -332,12 +333,46 @@ typedef enum : NSUInteger {
             [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
                                                         completion:^(NSArray *participants, NSError *error) {
                 NSLog(@"USERS: %@", participants);
+                                                            
+                                                            
+                // Double check again if same user and audio
                 PFUser *user = [participants firstObject];
-                if (user) {
+                if (user &&
+                    self.selectedMessage.sender == sender &&
+                    [self.selectedMessage partWithAudio]
+                    ) {
+                    
                     NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
                     self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
                                               user.username, dateString];
-
+                    PFObject *userAvatar = [user objectForKey:@"avatar"];
+                    [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
+                                                             NSError *PF_NULLABLE_S error) {
+                        
+                        // Double check again if same user and audio
+                        if (userAvatar &&
+                            self.selectedMessage.sender == sender &&
+                            [self.selectedMessage partWithAudio]
+                            ) {
+                            
+                            PFFile *imageFile = userAvatar[@"image"];
+                            [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
+                                                                      NSError *PF_NULLABLE_S error) {
+                                
+                                // Double check again if same user and audio
+                                if (data &&
+                                    self.selectedMessage.sender == sender &&
+                                    [self.selectedMessage partWithAudio]
+                                    ) {
+                                    UIImage *image = [UIImage imageWithData:data];
+                                    [self.imageView setImage:image];
+                                }
+                            }];
+                        }
+                    }];
+                     
+                    
+                    NSLog(@"avatar %@", userAvatar);
                 }
             }];
         }
