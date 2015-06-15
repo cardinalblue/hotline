@@ -258,8 +258,15 @@ typedef enum : NSUInteger {
         t = [NSString stringWithFormat:@"%@", dic[@"after"]];
         [self.countNext setTitle:t forState:UIControlStateNormal];
         
-        t = [NSString stringWithFormat:@"%@", dic[@"unread"]];
-        [self.countUnread setTitle:t forState:UIControlStateNormal];
+        NSUInteger unread = [dic[@"unread"] unsignedLongValue];
+        if (unread > 0) {
+            self.countUnread.hidden = NO;
+            t = [NSString stringWithFormat:@"%@", dic[@"unread"]];
+            [self.countUnread setTitle:t forState:UIControlStateNormal];
+        }
+        else {
+            self.countUnread.hidden = YES;
+        }
     }
 }
 #pragma mark - UI Handlers

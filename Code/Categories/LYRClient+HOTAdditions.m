@@ -106,10 +106,10 @@
                                                predicateOperator:LYRPredicateOperatorIsEqualTo
                                                            value:previousMessage.conversation];
     LYRPredicate *posPrevP = [LYRPredicate predicateWithProperty:@"position"
-                                               predicateOperator:LYRPredicateOperatorIsGreaterThan
+                                               predicateOperator:LYRPredicateOperatorIsLessThan
                                                            value:[NSNumber numberWithLongLong:previousMessage.position]];
     LYRPredicate *posPostP = [LYRPredicate predicateWithProperty:@"position"
-                                               predicateOperator:LYRPredicateOperatorIsLessThan
+                                               predicateOperator:LYRPredicateOperatorIsGreaterThan
                                                            value:[NSNumber numberWithLongLong:previousMessage.position]];
     LYRPredicate *unreadP  = [LYRPredicate predicateWithProperty:@"isUnread"
                                                predicateOperator:LYRPredicateOperatorIsEqualTo
