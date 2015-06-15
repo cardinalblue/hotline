@@ -36,6 +36,21 @@
     
     return nil;
 }
+- (NSUInteger)countInConversation:(LYRConversation *)conversation
+                            error:(NSError *__autoreleasing *)error
+{
+    LYRQuery *query;
+    
+    LYRPredicate *converP  = [LYRPredicate predicateWithProperty:@"conversation"
+                                               predicateOperator:LYRPredicateOperatorIsEqualTo
+                                                           value:conversation];
+    // ----
+    query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+    query.resultType = LYRQueryResultTypeCount;
+    query.predicate = converP;
+    NSUInteger count = [self countForQuery:query error:error];
+    return count;
+}
 - (LYRMessage *)lastMessage:(LYRConversation *)conversation
                       error:(NSError *__autoreleasing *)error
 {

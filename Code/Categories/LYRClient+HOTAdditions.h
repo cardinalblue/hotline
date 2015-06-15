@@ -12,6 +12,8 @@
 
 - (LYRMessage *)firstUnreadFromConversation:(LYRConversation *)conversation
                                       error:(NSError *__autoreleasing *)error;
+- (NSUInteger)countInConversation:(LYRConversation *)conversation
+                            error:(NSError *__autoreleasing *)error;
 - (LYRMessage *)lastMessage:(LYRConversation *)conversation
                       error:(NSError *__autoreleasing *)error;
 

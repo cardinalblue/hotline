@@ -16,6 +16,8 @@
 #import "ConversationViewController.h"
 #import "HOTConversationViewController.h"
 
+#import "UserManager.h"
+
 typedef enum : NSUInteger {
     PlayStateIdle = 0,
     PlayStateLoading,
@@ -39,6 +41,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, weak) IBOutlet UIButton *countPrev;
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
 @property (nonatomic, weak) IBOutlet UIButton *countUnread;
+@property (weak, nonatomic) IBOutlet UILabel  *playingLabel;
 
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
@@ -49,6 +52,10 @@ typedef enum : NSUInteger {
 @end
 
 @implementation HOTConversationViewController
+{
+    NSDateFormatter *_dateFormatter;
+    
+}
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
@@ -61,6 +68,10 @@ typedef enum : NSUInteger {
     self = [super init];
     if (self) {
         _layerClient = layerClient;
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        [_dateFormatter setDateStyle:NSDateFormatterShortStyle];
+        [_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+        
         [self initialize];
         [self gotoIdle];
     }
@@ -83,6 +94,7 @@ typedef enum : NSUInteger {
 {
     [super viewDidLoad];
     
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithTitle:@"Debug"
                                          style:UIBarButtonItemStylePlain
@@ -109,11 +121,20 @@ typedef enum : NSUInteger {
         }
     }
 }
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+}
 
 #pragma mark - State transitions
 
 - (void)gotoLoadingOrPlaying
 {
+    NSLog(@">>>> gotoLoadingOrPlaying");
+    NSAssert(self.selectedMessage, @"gotoLoadingOrPlaying no selectedMessage");
+    
+    [self updatePlayingLabel];
+    
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
     if (!part) {
         [self tryNextMessage];
@@ -136,6 +157,9 @@ typedef enum : NSUInteger {
 
 - (void)gotoLoading
 {
+    NSLog(@">>>> gotoLoading");
+    NSAssert(self.selectedMessage, @"gotoLoading no selectedMessage");
+
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
     NSError *error;
     LYRProgress *progress = [part downloadContent:&error];
@@ -145,24 +169,30 @@ typedef enum : NSUInteger {
     else {
         NSLog(@">>>> PlayStateLoading");
         self.state = PlayStateLoading;
-        [self.playButton setTitle:@"()" forState:UIControlStateNormal];
+        [self.playButton setTitle:@"( )" forState:UIControlStateNormal];
     }
 }
 
 - (void)gotoPlaying
 {
     NSLog(@">>>> PlayStatePlaying message by %@", self.selectedMessage.sender.userID);
+    NSAssert(self.selectedMessage, @"gotoPlaying no selectedMessage");
+
     self.state = PlayStatePlaying;
     
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
-    [self playSelectedMessage];
+    NSError *error;
+    [self playSelectedMessage:&error];
+    if (error)
+        [self gotoError:error];
     
 }
 
 - (void)gotoIdle
 {
     NSLog(@">>>> PlayStateIdle");
+
     self.state = PlayStateIdle;
     
     [self.playButton setTitle:@"..." forState:UIControlStateNormal];
@@ -171,6 +201,8 @@ typedef enum : NSUInteger {
 - (void)gotoPaused
 {
     NSLog(@">>>> PlayStatePaused");
+    NSAssert(self.selectedMessage, @"gotoPaused no selectedMessage");
+
     self.state = PlayStatePaused;
     
     [self.player pause];
@@ -179,6 +211,9 @@ typedef enum : NSUInteger {
 }
 - (void)tryNextMessage
 {
+    NSLog(@">>>> tryNextMessage");
+    NSAssert(self.selectedMessage, @"tryNextMessage no selectedMessage");
+
     NSError *error;
     LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
     if (next) {
@@ -212,7 +247,7 @@ typedef enum : NSUInteger {
         
         NSError *error;
         LYRMessage *next;
-        if (!self.selectedMessage ) {
+        if (!self.selectedMessage) {
             next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
         }
         else {
@@ -232,23 +267,37 @@ typedef enum : NSUInteger {
 
 #pragma mark - Do stuff
 
-- (void)playSelectedMessage
+- (void)playSelectedMessage:(NSError **)error
 {
     LYRMessagePart *part = [self.selectedMessage partWithAudio];
-    NSError *error;
     
     self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:part.fileURL error:&error];
-    [self.player setDelegate:self];
-    [self.player play];
+    if (self.player) {
+        [self.player setDelegate:self];
+        [self.player play];
+    }
 }
 
 - (void)updateCounts
 {
-    if (!self.selectedMessage)
-        return;
-    
     NSError *error;
-    NSDictionary *dic = [self.layerClient countsAround:self.selectedMessage error:&error];
+    NSDictionary *dic = nil;
+    
+    if (!self.selectedMessage) {
+        NSUInteger count = [self.layerClient countInConversation:self.conversation
+                                                           error:&error];
+        if (!error) {
+            dic = @{
+                    @"before":  @(count),
+                    @"after":   @(0),
+                    @"unread":  @(0)
+                    };
+        }
+    }
+    else {
+        dic = [self.layerClient countsAround:self.selectedMessage error:&error];
+    }
+    
     if (dic) {
         NSString *t;
 
@@ -269,6 +318,33 @@ typedef enum : NSUInteger {
         }
     }
 }
+
+- (void)updatePlayingLabel
+{
+    if (!self.selectedMessage) {
+        self.playingLabel.hidden = YES;
+    }
+    else {
+        self.playingLabel.hidden = NO;
+        LYRActor *sender = self.selectedMessage.sender;
+        NSString *userID = sender.userID;
+        if (userID) {
+            [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
+                                                        completion:^(NSArray *participants, NSError *error) {
+                NSLog(@"USERS: %@", participants);
+                PFUser *user = [participants firstObject];
+                if (user) {
+                    NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
+                    self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
+                                              user.username, dateString];
+
+                }
+            }];
+        }
+        
+    }
+}
+
 #pragma mark - UI Handlers
 
 - (void)handleDebug

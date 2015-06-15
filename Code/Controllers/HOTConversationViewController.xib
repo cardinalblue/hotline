@@ -13,6 +13,7 @@
                 <outlet property="countUnread" destination="gMh-OZ-8Ip" id="kaV-iL-sFl"/>
                 <outlet property="nextButton" destination="2hW-Ck-Q2g" id="xQJ-Nn-QfW"/>
                 <outlet property="playButton" destination="iVT-Et-1Xb" id="Whm-fQ-4hK"/>
+                <outlet property="playingLabel" destination="jfh-5a-FBx" id="UJg-OX-GUF"/>
                 <outlet property="previousButton" destination="v4z-4w-Rnp" id="1Vc-zQ-irj"/>
                 <outlet property="view" destination="iN0-l3-epB" id="eFb-ij-Tdh"/>
             </connections>
@@ -28,10 +29,16 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Dw6-17-n3q">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="284"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaH-wD-Lfl" userLabel="countPrev">
-                                    <rect key="frame" x="-10" y="130" width="30" height="24"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jfh-5a-FBx" userLabel="playingLabel">
+                                    <rect key="frame" x="139" y="20" width="42" height="20.5"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EaH-wD-Lfl" userLabel="countPrev">
+                                    <rect key="frame" x="-10" y="127" width="30" height="29"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" title="0">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -43,10 +50,10 @@
                                         <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="GYX-7e-vJ4"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eKK-EZ-Xmo" userLabel="countNext">
-                                    <rect key="frame" x="300" y="130" width="30" height="24"/>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eKK-EZ-Xmo" userLabel="countNext">
+                                    <rect key="frame" x="300" y="127" width="30" height="29"/>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" title="0">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -58,10 +65,10 @@
                                         <action selector="handlePreviousButtonTapped:" destination="-1" eventType="touchUpInside" id="L6A-gB-WnJ"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMh-OZ-8Ip" userLabel="countUnread">
-                                    <rect key="frame" x="300" y="164" width="30" height="24"/>
+                                <button opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMh-OZ-8Ip" userLabel="countUnread">
+                                    <rect key="frame" x="300" y="166" width="30" height="29"/>
                                     <color key="backgroundColor" red="1" green="0.270588249" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" title="0">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -173,6 +180,8 @@
                                 <constraint firstItem="v4z-4w-Rnp" firstAttribute="centerY" secondItem="iVT-Et-1Xb" secondAttribute="centerY" id="OKB-pP-DeB"/>
                                 <constraint firstAttribute="centerY" secondItem="EaH-wD-Lfl" secondAttribute="centerY" id="QHo-Ck-RkZ"/>
                                 <constraint firstItem="gMh-OZ-8Ip" firstAttribute="top" secondItem="eKK-EZ-Xmo" secondAttribute="bottom" constant="10" id="a2k-E7-SrI"/>
+                                <constraint firstItem="jfh-5a-FBx" firstAttribute="top" secondItem="Dw6-17-n3q" secondAttribute="top" constant="20" id="feD-ja-PXh"/>
+                                <constraint firstAttribute="centerX" secondItem="jfh-5a-FBx" secondAttribute="centerX" id="imP-7Y-lPT"/>
                                 <constraint firstItem="gMh-OZ-8Ip" firstAttribute="leading" secondItem="2hW-Ck-Q2g" secondAttribute="trailing" constant="10" id="tmi-Od-wNY"/>
                                 <constraint firstItem="eKK-EZ-Xmo" firstAttribute="leading" secondItem="2hW-Ck-Q2g" secondAttribute="trailing" constant="10" id="wyP-kh-wSE"/>
                             </constraints>
@@ -220,8 +229,8 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="cNV-aT-e1x" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="1fh-lu-ea3"/>
-                <constraint firstAttribute="trailing" secondItem="cNV-aT-e1x" secondAttribute="trailing" id="T2U-W2-loc"/>
-                <constraint firstAttribute="bottom" secondItem="cNV-aT-e1x" secondAttribute="bottom" id="Y2a-gV-7qq"/>
+                <constraint firstItem="cNV-aT-e1x" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="T2U-W2-loc"/>
+                <constraint firstItem="cNV-aT-e1x" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="Y2a-gV-7qq"/>
                 <constraint firstItem="cNV-aT-e1x" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="gEn-fR-r59"/>
             </constraints>
             <point key="canvasLocation" x="326" y="198"/>
