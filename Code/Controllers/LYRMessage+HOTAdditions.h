@@ -11,5 +11,8 @@
 @interface LYRMessage (HOTAdditions)
 
 - (LYRMessagePart *)partWithAudio;
+- (LYRMessagePart *)partWithImage;
+- (LYRMessagePart *)partPlayable;
+
 
 @end

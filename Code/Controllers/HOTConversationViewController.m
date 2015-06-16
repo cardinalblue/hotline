@@ -136,7 +136,7 @@ typedef enum : NSUInteger {
     
     [self updatePlayingDisplay];
     
-    LYRMessagePart *part = [self.selectedMessage partWithAudio];
+    LYRMessagePart *part = [self.selectedMessage partPlayable];
     if (!part) {
         [self tryNextMessage];
     }
@@ -161,7 +161,7 @@ typedef enum : NSUInteger {
     NSLog(@">>>> gotoLoading");
     NSAssert(self.selectedMessage, @"gotoLoading no selectedMessage");
 
-    LYRMessagePart *part = [self.selectedMessage partWithAudio];
+    LYRMessagePart *part = [self.selectedMessage partPlayable];
     NSError *error;
     LYRProgress *progress = [part downloadContent:&error];
     if (!progress) {
@@ -270,12 +270,18 @@ typedef enum : NSUInteger {
 
 - (void)playSelectedMessage:(NSError **)error
 {
-    LYRMessagePart *part = [self.selectedMessage partWithAudio];
-    
-    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:part.fileURL error:&error];
-    if (self.player) {
-        [self.player setDelegate:self];
-        [self.player play];
+    LYRMessagePart *partAudio = [self.selectedMessage partWithAudio];
+    if (partAudio) {
+        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:partAudio.fileURL error:error];
+        if (self.player) {
+            [self.player setDelegate:self];
+            [self.player play];
+        }
+        return;
+    }
+    LYRMessagePart *partImage = [self.selectedMessage partWithImage];
+    if (partImage) {
+        
     }
 }
 
@@ -327,7 +333,8 @@ typedef enum : NSUInteger {
     }
     else {
         self.playingLabel.hidden = NO;
-        LYRActor *sender = self.selectedMessage.sender;
+        LYRMessage *message = self.selectedMessage;
+        LYRActor *sender = message.sender;
         NSString *userID = sender.userID;
         if (userID) {
             [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
@@ -335,12 +342,9 @@ typedef enum : NSUInteger {
                 NSLog(@"USERS: %@", participants);
                                                             
                                                             
-                // Double check again if same user and audio
+                // Double check again if same message
                 PFUser *user = [participants firstObject];
-                if (user &&
-                    self.selectedMessage.sender == sender &&
-                    [self.selectedMessage partWithAudio]
-                    ) {
+                if (user && self.selectedMessage == message) {
                     
                     NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
                     self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
@@ -349,21 +353,15 @@ typedef enum : NSUInteger {
                     [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
                                                              NSError *PF_NULLABLE_S error) {
                         
-                        // Double check again if same user and audio
-                        if (userAvatar &&
-                            self.selectedMessage.sender == sender &&
-                            [self.selectedMessage partWithAudio]
-                            ) {
+                        // Double check again if same message
+                        if (userAvatar && self.selectedMessage == message) {
                             
                             PFFile *imageFile = userAvatar[@"image"];
                             [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
                                                                       NSError *PF_NULLABLE_S error) {
                                 
-                                // Double check again if same user and audio
-                                if (data &&
-                                    self.selectedMessage.sender == sender &&
-                                    [self.selectedMessage partWithAudio]
-                                    ) {
+                                // Double check again if same message
+                                if (data && self.selectedMessage == message) {
                                     UIImage *image = [UIImage imageWithData:data];
                                     [self.imageView setImage:image];
                                 }
@@ -443,6 +441,10 @@ typedef enum : NSUInteger {
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
 {
     NSLog(@"audioPlayerDidFinishPlaying:%@", @(flag));
+    
+    // Check if old player 
+    if (self.player != player)
+        return;
     
     if (!self.selectedMessage) {
         [self gotoIdle];

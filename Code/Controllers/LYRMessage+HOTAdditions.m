@@ -20,5 +20,29 @@
     
     return nil;
 }
+- (LYRMessagePart *)partWithImage
+{
+    for (LYRMessagePart *part in self.parts) {
+        if ([part.MIMEType isEqualToString:@"image/jpeg"] ||
+            [part.MIMEType isEqualToString:@"image/jpg"]) {
+            return part;
+        }
+    }
+    
+    return nil;
+}
+- (LYRMessagePart *)partPlayable
+{
+    LYRMessagePart *part;
+    
+    part = [self partWithAudio];
+    if (part) return part;
+
+    part = [self partWithImage];
+    if (part) return part;
+
+    return nil;
+    
+}
 
 @end
