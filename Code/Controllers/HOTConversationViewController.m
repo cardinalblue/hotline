@@ -30,7 +30,12 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) LYRClient *layerClient;
 
-@property (nonatomic, assign) PlayState state;
+@property (nonatomic, assign) PlayState playState;
+@property (nonatomic, assign) BOOL      isRecordingState;
+    // NOTE:
+    // These two states are orthogonal, they should only interact in that
+    // it shouldn't actually try to play something while recording, and that after
+    // recording it should resume the play state.
 
 @property (nonatomic, strong) LYRMessage *selectedMessage;
 
@@ -55,7 +60,6 @@ typedef enum : NSUInteger {
 @implementation HOTConversationViewController
 {
     NSDateFormatter *_dateFormatter;
-    
 }
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
@@ -69,9 +73,12 @@ typedef enum : NSUInteger {
     self = [super init];
     if (self) {
         _layerClient = layerClient;
+        
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
+        
+        _isRecordingState = NO;
         
         [self initialize];
         [self gotoIdle];
@@ -150,7 +157,7 @@ typedef enum : NSUInteger {
 
 - (void)gotoError:(NSError *)error
 {
-    self.state = PlayStateError;
+    self.playState = PlayStateError;
     [self.playButton setTitle:@"ERROR" forState:UIControlStateNormal];
     NSLog(@">>>>>>>>>> ERROR %@", error);
 
@@ -169,7 +176,7 @@ typedef enum : NSUInteger {
     }
     else {
         NSLog(@">>>> PlayStateLoading");
-        self.state = PlayStateLoading;
+        self.playState = PlayStateLoading;
         [self.playButton setTitle:@"( )" forState:UIControlStateNormal];
     }
 }
@@ -179,22 +186,23 @@ typedef enum : NSUInteger {
     NSLog(@">>>> PlayStatePlaying message by %@", self.selectedMessage.sender.userID);
     NSAssert(self.selectedMessage, @"gotoPlaying no selectedMessage");
 
-    self.state = PlayStatePlaying;
+    self.playState = PlayStatePlaying;
     
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
-    NSError *error;
-    [self playSelectedMessage:&error];
-    if (error)
-        [self gotoError:error];
-    
+    if (!_isRecordingState) {
+        NSError *error;
+        [self playSelectedMessage:&error];
+        if (error)
+            [self gotoError:error];
+    }
 }
 
 - (void)gotoIdle
 {
     NSLog(@">>>> PlayStateIdle");
 
-    self.state = PlayStateIdle;
+    self.playState = PlayStateIdle;
     
     [self.playButton setTitle:@"..." forState:UIControlStateNormal];
 }
@@ -204,7 +212,7 @@ typedef enum : NSUInteger {
     NSLog(@">>>> PlayStatePaused");
     NSAssert(self.selectedMessage, @"gotoPaused no selectedMessage");
 
-    self.state = PlayStatePaused;
+    self.playState = PlayStatePaused;
     
     [self.player pause];
     
@@ -231,8 +239,14 @@ typedef enum : NSUInteger {
         }
     }
 }
-
-
+- (void)resumePlayState
+{
+    // Only thing that has to be resumed is "playing", otherwise things should
+    // just stay as they are.
+    //
+    if (self.playState == PlayStatePlaying)
+        [self gotoPlaying];
+}
 
 #pragma mark - Layer change notifications
 
@@ -242,9 +256,9 @@ typedef enum : NSUInteger {
 {
     NSLog(@"didReceiveLayerObjectsDidChangeNotification:%@", notification);
     
-    if (self.state == PlayStateLoading) {
+    if (self.playState == PlayStateLoading) {
         [self gotoLoadingOrPlaying];
-    } else if (self.state == PlayStateIdle) {
+    } else if (self.playState == PlayStateIdle) {
         
         NSError *error;
         LYRMessage *next;
@@ -393,10 +407,10 @@ typedef enum : NSUInteger {
 
 - (IBAction)handlePlayButtonTapped:(id)sender
 {
-    if (self.state == PlayStatePlaying) {
+    if (self.playState == PlayStatePlaying) {
         [self gotoPaused];
-    } else if (self.state == PlayStatePaused) {
-        [self gotoPlaying];
+    } else if (self.playState == PlayStatePaused && !_isRecordingState) {
+        [self gotoLoadingOrPlaying];
     }
 }
 
@@ -442,10 +456,11 @@ typedef enum : NSUInteger {
 {
     NSLog(@"audioPlayerDidFinishPlaying:%@", @(flag));
     
-    // Check if old player 
+    // Check if old player
     if (self.player != player)
         return;
     
+    // Not sure how this could happen, but just in case
     if (!self.selectedMessage) {
         [self gotoIdle];
     }
@@ -482,17 +497,27 @@ typedef enum : NSUInteger {
 
 - (IBAction)handleRecordButtonTapDown:(id)sender
 {
+    _isRecordingState = YES;
+    
+    [self.player pause];        // Pause whatever playback
+    
     [self.recorder record];
 }
 
 - (IBAction)handleRecordButtonTapUpOutside:(id)sender
 {
+    _isRecordingState = NO;
+
     [self.recorder stop];
     [self.recorder deleteRecording];
+    
+    [self resumePlayState];
 }
 
 - (IBAction)handleRecordButtonTapUpInside:(id)sender
 {
+    _isRecordingState = NO;
+
     [self.recorder stop];
     NSURL *recordingURL = self.recorder.url;
     
@@ -500,15 +525,19 @@ typedef enum : NSUInteger {
                                                                    data:[NSData dataWithContentsOfURL:recordingURL]];
 
     NSError *error;
-    LYRMessage *message = [self.layerClient newMessageWithParts:@[audioPart] options:nil error:&error];
+    LYRMessage *message = [self.layerClient newMessageWithParts:@[audioPart]
+                                                        options:nil
+                                                          error:&error];
     BOOL validated = [self.conversation sendMessage:message error:&error];
-    
     if (!validated) {
         NSLog(@"Error sending message: %@", error);
     }
     
     // Reset audio recorder
     [self createNewAudioRecorder];
+
+    // Resume
+    [self resumePlayState];
 }
 
 - (void)createNewAudioRecorder
