@@ -22,6 +22,7 @@ typedef enum : NSUInteger {
     PlayStateIdle = 0,
     PlayStateLoading,
     PlayStatePlaying,
+    PlayStateStalled,
     PlayStatePaused,
     PlayStateError
 } PlayState;
@@ -30,6 +31,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) LYRClient *layerClient;
 
+// ---- STATE RELATED -------------------------------------------------
+@property (nonatomic, strong) LYRMessage *selectedMessage;
+
 @property (nonatomic, assign) PlayState playState;
 @property (nonatomic, assign) BOOL      isRecordingState;
     // NOTE:
@@ -37,7 +41,10 @@ typedef enum : NSUInteger {
     // it shouldn't actually try to play something while recording, and that after
     // recording it should resume the play state.
 
-@property (nonatomic, strong) LYRMessage *selectedMessage;
+@property (nonatomic, strong) LYRMessage *lastImageMessage;
+@property (nonatomic, strong) NSDate     *lastImageDate;
+
+// ---------------------------------------------------------------------
 
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
@@ -51,9 +58,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
-
-@property (nonatomic, strong) LYRProgress *progress;
-@property (nonatomic, strong) LYRMessagePart *part;
+@property (nonatomic, strong) NSTimer *stallTimer;
 
 @end
 
@@ -113,8 +118,9 @@ typedef enum : NSUInteger {
     
     // Initialize selected message to the last unread, or just the last one
     NSError *error;
-    LYRMessage *next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error]
-                    ?: [self.layerClient lastMessage:self.conversation error:&error];
+    LYRMessage *next =
+        [self.layerClient firstUnreadFromConversation:self.conversation error:&error]
+        ?: [self.layerClient lastMessage:self.conversation error:&error];
     
     if (next) {
         self.selectedMessage = next;
@@ -149,7 +155,7 @@ typedef enum : NSUInteger {
     
     LYRMessagePart *part = [self.selectedMessage partPlayable];
     if (!part) {
-        [self tryNextMessage];
+        [self tryNextMessageCheckingLastImage:YES];
     }
     else if (part.transferStatus == LYRContentTransferComplete) {
         [self gotoPlaying];
@@ -196,9 +202,24 @@ typedef enum : NSUInteger {
     
     if (!_isRecordingState) {
         NSError *error;
-        [self playSelectedMessage:&error];
-        if (error)
-            [self gotoError:error];
+        LYRMessagePart *part;
+        
+        // --------------------------------------------------
+        part = [self.selectedMessage partWithAudio];
+        if (part) {
+            [self playAudioPart:part error:&error];
+            return;
+        }
+
+        // --------------------------------------------------
+        part = [self.selectedMessage partWithImage];
+        if (part) {
+            [self playImagePart:part error:&error];
+            
+            // We displayed image, move on
+            [self tryNextMessageCheckingLastImage:YES];
+            return;
+        }
     }
 }
 
@@ -222,17 +243,56 @@ typedef enum : NSUInteger {
     
     [self.playButton setTitle:@">" forState:UIControlStateNormal];
 }
-- (void)tryNextMessage
+
+- (void)gotoStalled
 {
-    NSLog(@">>>> tryNextMessage");
-    NSAssert(self.selectedMessage, @"tryNextMessage no selectedMessage");
+    NSLog(@">>>> PlayStateStalled");
+    self.playState = PlayStateStalled;
+
+    [self.playButton setTitle:@"*" forState:UIControlStateNormal];
+    
+    // Setup timer
+    self.stallTimer = [NSTimer timerWithTimeInterval:1.0f
+                                              target:self
+                                            selector:@selector(stallTimeout:)
+                                            userInfo:nil
+                                             repeats:YES];
+}
+
+#pragma mark - State related
+
+- (void)tryNextMessageCheckingLastImage:(BOOL)checkingLastImage
+{
+    NSLog(@">>>> tryNextMessageCheckingLastImage");
+    NSAssert(self.selectedMessage, @"tryNextMessageCheckingLastImage no selectedMessage");
 
     NSError *error;
-    LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    LYRMessage *next;
+    if (!self.selectedMessage)
+        next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
+    else
+        next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    
     if (next) {
-        self.selectedMessage = next;
-        [self updateCounts];
-        [self gotoLoadingOrPlaying];
+        
+        // See if the last image was displayed long enough (or from the same
+        // sender) so we can go on
+        //
+        if (checkingLastImage &&
+            self.lastImageMessage &&
+            self.lastImageMessage.sender && next.sender &&
+            self.lastImageMessage.sender.userID != next.sender.userID &&
+            [self.lastImageDate timeIntervalSinceNow] < 5.0f
+            ) {
+            // Hold off!
+            [self gotoStalled];
+        }
+        else {
+            // Go to next!
+            self.selectedMessage = next;
+            [self updateCounts];
+            [self gotoLoadingOrPlaying];
+        }
     }
     else {
         if (error) {
@@ -251,6 +311,17 @@ typedef enum : NSUInteger {
     if (self.playState == PlayStatePlaying)
         [self gotoPlaying];
 }
+- (void)stallTimeout:(NSTimer *)timer
+{
+    if (self.stallTimer == timer) {
+        if (self.playState == PlayStateStalled) {
+            [self tryNextMessageCheckingLastImage:YES];            
+        }
+        else {
+            self.stallTimer = nil;
+        }
+    }
+}
 
 #pragma mark - Layer change notifications
 
@@ -263,44 +334,29 @@ typedef enum : NSUInteger {
     if (self.playState == PlayStateLoading) {
         [self gotoLoadingOrPlaying];
     } else if (self.playState == PlayStateIdle) {
-        
-        NSError *error;
-        LYRMessage *next;
-        if (!self.selectedMessage) {
-            next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
-        }
-        else {
-            next = [self.layerClient messageAfter:self.selectedMessage error:&error];
-        }
-        if (error) {
-            [self gotoError:error];
-        }
-        else if (next) {
-            self.selectedMessage = next;
-            [self updateCounts];
-            [self gotoLoadingOrPlaying];
-        }
+        [self tryNextMessageCheckingLastImage:YES];
     }
 }
 
 
 #pragma mark - Do stuff
 
-- (void)playSelectedMessage:(NSError **)error
+- (void)playAudioPart:(LYRMessagePart *)part error:(NSError **)error
 {
-    LYRMessagePart *partAudio = [self.selectedMessage partWithAudio];
-    if (partAudio) {
-        self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:partAudio.fileURL error:error];
-        if (self.player) {
-            [self.player setDelegate:self];
-            [self.player play];
-        }
-        return;
+    self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:part.fileURL error:error];
+    if (self.player) {
+        [self.player setDelegate:self];
+        [self.player play];
     }
-    LYRMessagePart *partImage = [self.selectedMessage partWithImage];
-    if (partImage) {
-        
-    }
+}
+
+- (void)playImagePart:(LYRMessagePart *)part error:(NSError **)error
+{
+    self.lastImageMessage = self.selectedMessage;
+    self.lastImageDate    = [[NSDate alloc] init];
+
+    UIImage *image = [UIImage imageWithData:part.data];
+    [self.imageView setImage:image];
 }
 
 - (void)updateCounts
@@ -355,6 +411,8 @@ typedef enum : NSUInteger {
         LYRActor *sender = message.sender;
         NSString *userID = sender.userID;
         if (userID) {
+            
+            // ---- Get user information
             [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
                                                         completion:^(NSArray *participants, NSError *error) {
                 NSLog(@"USERS: %@", participants);
@@ -362,34 +420,51 @@ typedef enum : NSUInteger {
                                                             
                 // Double check again if same message
                 PFUser *user = [participants firstObject];
-                if (user && self.selectedMessage == message) {
+                if (!user || self.selectedMessage != message)
+                    return;
                     
-                    NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
-                    self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
-                                              user.username, dateString];
-                    PFObject *userAvatar = [user objectForKey:@"avatar"];
-                    [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
-                                                             NSError *PF_NULLABLE_S error) {
+                // Update label
+                NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
+                self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
+                                          user.username, dateString];
+                
+                // Check if we should update the image or leave there
+                if (self.lastImageMessage &&
+                    self.lastImageMessage.sender &&
+                    [self.lastImageMessage.sender.userID isEqualToString:userID]) {
+                    return;
+                }
+                
+                // Update image
+                PFObject *userAvatar = [user objectForKey:@"avatar"];
+                [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
+                                                         NSError *PF_NULLABLE_S error) {
+                    
+                    // Double check again if same message
+                    if (!userAvatar || self.selectedMessage != message)
+                        return;
+                    
+                        
+                    PFFile *imageFile = userAvatar[@"image"];
+                    [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
+                                                              NSError *PF_NULLABLE_S error) {
                         
                         // Double check again if same message
-                        if (userAvatar && self.selectedMessage == message) {
-                            
-                            PFFile *imageFile = userAvatar[@"image"];
-                            [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
-                                                                      NSError *PF_NULLABLE_S error) {
-                                
-                                // Double check again if same message
-                                if (data && self.selectedMessage == message) {
-                                    UIImage *image = [UIImage imageWithData:data];
-                                    [self.imageView setImage:image];
-                                }
-                            }];
-                        }
+                        if (!data || self.selectedMessage != message)
+                            return;
+
+                        // Set the image
+                        UIImage *image = [UIImage imageWithData:data];
+                        [self.imageView setImage:image];
+                        
+                        // Clear the lastImage
+                        self.lastImageMessage = nil;
+                        self.lastImageDate    = nil;
                     }];
-                     
-                    
-                    NSLog(@"avatar %@", userAvatar);
-                }
+                }];
+                 
+                
+                NSLog(@"avatar %@", userAvatar);
             }];
         }
         
@@ -422,14 +497,20 @@ typedef enum : NSUInteger {
 {
     
     NSError *error;
-    LYRMessage *next;
+    LYRMessage *prev;
     if (!self.selectedMessage)
-        next = [self.layerClient lastMessage:self.conversation error:&error];
+        prev = [self.layerClient lastMessage:self.conversation error:&error];
     else
-        next = [self.layerClient messageBefore:self.selectedMessage error:&error];
+        prev = [self.layerClient messageBefore:self.selectedMessage error:&error];
     
-    if (next) {
-        self.selectedMessage = next;
+    if (prev) {
+        
+        // Always clear the lastImage status
+        self.lastImageMessage = nil;
+        self.lastImageDate = nil;
+        
+        // Go to the previous message
+        self.selectedMessage = prev;
         [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
@@ -450,7 +531,7 @@ typedef enum : NSUInteger {
     if (!self.selectedMessage)
         return;
     
-    [self tryNextMessage];
+    [self tryNextMessageCheckingLastImage:NO];
 }
 
 
@@ -470,22 +551,15 @@ typedef enum : NSUInteger {
     }
     else {
         
-        [self.selectedMessage markAsRead:nil];
+        // See if the player for the selectedMessage
+        if (self.selectedMessage &&
+            [[self.selectedMessage partWithAudio] fileURL] == player.url) {
         
-        NSError *error;
-        LYRMessage *next = [self.layerClient messageAfter:self.selectedMessage error:&error];
-        if (next) {
-            self.selectedMessage = next;
-            [self updateCounts];
-            [self gotoLoadingOrPlaying];
-        }
-        else {
-            if (error) {
-                [self gotoError:error];
-            }
-            else {
-                [self gotoIdle];
-            }
+            // Mark as played
+            [self.selectedMessage markAsRead:nil];
+            
+            // Try the next
+            [self tryNextMessageCheckingLastImage:YES];
         }
     }
 }
