@@ -29,23 +29,6 @@ typedef enum : NSUInteger {
 
 @interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate>
 
-@property (nonatomic, strong) LYRClient *layerClient;
-
-// ---- STATE RELATED -------------------------------------------------
-@property (nonatomic, strong) LYRMessage *selectedMessage;
-
-@property (nonatomic, assign) PlayState playState;
-@property (nonatomic, assign) BOOL      isRecordingState;
-    // NOTE:
-    // These two states are orthogonal, they should only interact in that
-    // it shouldn't actually try to play something while recording, and that after
-    // recording it should resume the play state.
-
-@property (nonatomic, strong) LYRMessage *lastImageMessage;
-@property (nonatomic, strong) NSDate     *lastImageDate;
-
-// ---------------------------------------------------------------------
-
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
 @property (nonatomic, weak) IBOutlet UIButton *playButton;
@@ -56,9 +39,30 @@ typedef enum : NSUInteger {
 @property (weak, nonatomic) IBOutlet UILabel  *playingLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
+@property (nonatomic, strong) LYRClient *layerClient;
 @property (nonatomic, strong) AVAudioRecorder *recorder;
 @property (nonatomic, strong) AVAudioPlayer *player;
+
 @property (nonatomic, strong) NSTimer *stallTimer;
+@property (nonatomic, strong) NSTimer *imageTimer;
+
+// ---------------------------------------------------------------------
+// STATE RELATED
+
+@property (nonatomic, strong) LYRMessage *selectedMessage;
+@property (nonatomic, strong) NSDate     *selectedMessagePlayedAt;
+
+@property (nonatomic, assign) PlayState playState;
+@property (nonatomic, assign) BOOL      isRecordingState;
+// NOTE:
+// These two states are orthogonal, they should only interact in that
+// it shouldn't actually try to play something while recording, and that after
+// recording it should resume the play state.
+
+@property (nonatomic, strong) LYRMessage *lastImageMessage;
+@property (nonatomic, strong) NSDate     *lastImageDisplayedAt;
+
+// ---------------------------------------------------------------------
 
 @end
 
@@ -124,6 +128,7 @@ typedef enum : NSUInteger {
     
     if (next) {
         self.selectedMessage = next;
+        self.selectedMessagePlayedAt = nil;
         [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
@@ -148,14 +153,15 @@ typedef enum : NSUInteger {
 
 - (void)gotoLoadingOrPlaying
 {
-    NSLog(@">>>> gotoLoadingOrPlaying");
+    NSLog(@">>>> gotoLoadingOrPlaying %llu", self.selectedMessage.position);
     NSAssert(self.selectedMessage, @"gotoLoadingOrPlaying no selectedMessage");
     
     [self updatePlayingDisplay];
     
     LYRMessagePart *part = [self.selectedMessage partPlayable];
     if (!part) {
-        [self tryNextMessageCheckingLastImage:YES];
+        // Ooops bad message, go to next one
+        [self gotoNextMessage];
     }
     else if (part.transferStatus == LYRContentTransferComplete) {
         [self gotoPlaying];
@@ -200,7 +206,11 @@ typedef enum : NSUInteger {
     
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
+    // Only actually play if we are not recording
     if (!_isRecordingState) {
+        
+        self.selectedMessagePlayedAt = [[NSDate alloc] init];
+        
         NSError *error;
         LYRMessagePart *part;
         
@@ -215,9 +225,6 @@ typedef enum : NSUInteger {
         part = [self.selectedMessage partWithImage];
         if (part) {
             [self playImagePart:part error:&error];
-            
-            // We displayed image, move on
-            [self tryNextMessageCheckingLastImage:YES];
             return;
         }
     }
@@ -252,19 +259,18 @@ typedef enum : NSUInteger {
     [self.playButton setTitle:@"*" forState:UIControlStateNormal];
     
     // Setup timer
-    self.stallTimer = [NSTimer timerWithTimeInterval:1.0f
-                                              target:self
-                                            selector:@selector(stallTimeout:)
-                                            userInfo:nil
-                                             repeats:YES];
+    [self.stallTimer invalidate];
+    self.stallTimer = [NSTimer scheduledTimerWithTimeInterval:1.0f
+                                                       target:self
+                                                     selector:@selector(stallTimeout:)
+                                                     userInfo:nil
+                                                      repeats:YES];
 }
 
-#pragma mark - State related
-
-- (void)tryNextMessageCheckingLastImage:(BOOL)checkingLastImage
+- (void)gotoNextMessage
 {
-    NSLog(@">>>> tryNextMessageCheckingLastImage");
-    NSAssert(self.selectedMessage, @"tryNextMessageCheckingLastImage no selectedMessage");
+    NSLog(@">>>> gotoNextMessage");
+    NSAssert(self.selectedMessage, @"gotoNextMessage no selectedMessage");
 
     NSError *error;
     LYRMessage *next;
@@ -278,18 +284,23 @@ typedef enum : NSUInteger {
         // See if the last image was displayed long enough (or from the same
         // sender) so we can go on
         //
-        if (checkingLastImage &&
-            self.lastImageMessage &&
-            self.lastImageMessage.sender && next.sender &&
-            self.lastImageMessage.sender.userID != next.sender.userID &&
-            [self.lastImageDate timeIntervalSinceNow] < 5.0f
-            ) {
+        BOOL t1 = self.selectedMessage &&
+                  self.selectedMessagePlayedAt &&
+                  [self.selectedMessagePlayedAt timeIntervalSinceNow] > -1.0f;
+        BOOL t2 = self.lastImageMessage &&
+                  self.lastImageMessage.sender && next.sender &&
+                  self.lastImageMessage.sender.userID != next.sender.userID &&
+                  [self.lastImageDisplayedAt timeIntervalSinceNow] > -5.0f;
+
+        NSLog(@">>>> gotoNextMessage - %i,%i", t1, t2);
+        if (t1 || t2) {
             // Hold off!
             [self gotoStalled];
         }
         else {
             // Go to next!
             self.selectedMessage = next;
+            self.selectedMessagePlayedAt = nil;
             [self updateCounts];
             [self gotoLoadingOrPlaying];
         }
@@ -303,6 +314,9 @@ typedef enum : NSUInteger {
         }
     }
 }
+
+#pragma mark - State related
+
 - (void)resumePlayState
 {
     // Only thing that has to be resumed is "playing", otherwise things should
@@ -315,11 +329,28 @@ typedef enum : NSUInteger {
 {
     if (self.stallTimer == timer) {
         if (self.playState == PlayStateStalled) {
-            [self tryNextMessageCheckingLastImage:YES];            
+            [self gotoNextMessage];
         }
         else {
             self.stallTimer = nil;
         }
+    }
+    else {
+        [timer invalidate];
+    }
+}
+- (void)imageTimeout:(NSTimer *)timer
+{
+    if (self.imageTimer == timer) {
+        
+        if (timer.userInfo == self.selectedMessage &&
+            self.playState == PlayStatePlaying) {
+        
+            [self gotoNextMessage];
+        }
+    }
+    else {
+        [timer invalidate];
     }
 }
 
@@ -334,7 +365,7 @@ typedef enum : NSUInteger {
     if (self.playState == PlayStateLoading) {
         [self gotoLoadingOrPlaying];
     } else if (self.playState == PlayStateIdle) {
-        [self tryNextMessageCheckingLastImage:YES];
+        [self gotoNextMessage];
     }
 }
 
@@ -343,6 +374,8 @@ typedef enum : NSUInteger {
 
 - (void)playAudioPart:(LYRMessagePart *)part error:(NSError **)error
 {
+    NSLog(@"playAudioPart %llu", part.message.position);
+    
     self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:part.fileURL error:error];
     if (self.player) {
         [self.player setDelegate:self];
@@ -352,11 +385,19 @@ typedef enum : NSUInteger {
 
 - (void)playImagePart:(LYRMessagePart *)part error:(NSError **)error
 {
+    NSLog(@"playImagePart %llu", part.message.position);
+    
     self.lastImageMessage = self.selectedMessage;
-    self.lastImageDate    = [[NSDate alloc] init];
+    self.lastImageDisplayedAt    = [[NSDate alloc] init];
 
     UIImage *image = [UIImage imageWithData:part.data];
     [self.imageView setImage:image];
+    
+    self.imageTimer = [NSTimer scheduledTimerWithTimeInterval:3.0f
+                                                       target:self
+                                                     selector:@selector(imageTimeout:)
+                                                     userInfo:self.selectedMessage
+                                                      repeats:NO];
 }
 
 - (void)updateCounts
@@ -415,8 +456,6 @@ typedef enum : NSUInteger {
             // ---- Get user information
             [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
                                                         completion:^(NSArray *participants, NSError *error) {
-                NSLog(@"USERS: %@", participants);
-                                                            
                                                             
                 // Double check again if same message
                 PFUser *user = [participants firstObject];
@@ -459,7 +498,7 @@ typedef enum : NSUInteger {
                         
                         // Clear the lastImage
                         self.lastImageMessage = nil;
-                        self.lastImageDate    = nil;
+                        self.lastImageDisplayedAt    = nil;
                     }];
                 }];
                  
@@ -469,6 +508,15 @@ typedef enum : NSUInteger {
         }
         
     }
+}
+
+// Need to clear these to disable the "stalling" mechanism.
+//
+- (void)clearMessageTimes
+{
+    self.lastImageMessage = nil;
+    self.lastImageDisplayedAt = nil;
+    self.selectedMessagePlayedAt = nil;
 }
 
 #pragma mark - UI Handlers
@@ -495,6 +543,7 @@ typedef enum : NSUInteger {
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
+    [self clearMessageTimes];
     
     NSError *error;
     LYRMessage *prev;
@@ -507,10 +556,11 @@ typedef enum : NSUInteger {
         
         // Always clear the lastImage status
         self.lastImageMessage = nil;
-        self.lastImageDate = nil;
+        self.lastImageDisplayedAt = nil;
         
         // Go to the previous message
         self.selectedMessage = prev;
+        self.selectedMessagePlayedAt = nil;
         [self updateCounts];
         [self gotoLoadingOrPlaying];
     }
@@ -530,8 +580,10 @@ typedef enum : NSUInteger {
     // Do nothing if no message
     if (!self.selectedMessage)
         return;
+
+    [self clearMessageTimes];
     
-    [self tryNextMessageCheckingLastImage:NO];
+    [self gotoNextMessage];
 }
 
 
@@ -559,7 +611,7 @@ typedef enum : NSUInteger {
             [self.selectedMessage markAsRead:nil];
             
             // Try the next
-            [self tryNextMessageCheckingLastImage:YES];
+            [self gotoNextMessage];
         }
     }
 }
