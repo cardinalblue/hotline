@@ -33,6 +33,7 @@
 		5691724E1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
+		959081421B3171A600A02E4F /* CALayer+XibConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */; };
 		DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */; };
 /* End PBXBuildFile section */
 
@@ -94,6 +95,8 @@
 		9503C3BB1B2A7CA90083DC10 /* Keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keys.h; sourceTree = "<group>"; };
 		9503C3BC1B2AA7F20083DC10 /* LYRClient+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRClient+HOTAdditions.h"; sourceTree = "<group>"; };
 		9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRClient+HOTAdditions.m"; sourceTree = "<group>"; };
+		959081401B3171A600A02E4F /* CALayer+XibConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+XibConfiguration.h"; sourceTree = "<group>"; };
+		959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+XibConfiguration.m"; sourceTree = "<group>"; };
 		B229D8D6557B45378ED2CD58 /* Pods-LayerParseSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LayerParseSampleApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LayerParseSampleApp/Pods-LayerParseSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
 		B6B8E20DF9188E775F70E276 /* Pods-LayerParseSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LayerParseSampleApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-LayerParseSampleApp/Pods-LayerParseSampleApp.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -173,6 +176,8 @@
 				9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */,
 				569172491B2AD982000DF4DC /* LYRMessage+HOTAdditions.h */,
 				5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */,
+				959081401B3171A600A02E4F /* CALayer+XibConfiguration.h */,
+				959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */,
 			);
 			path = Categories;
 			sourceTree = "<group>";
@@ -412,6 +417,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				959081421B3171A600A02E4F /* CALayer+XibConfiguration.m in Sources */,
 				25713D6A1AC6071600FC5D38 /* AppDelegate.m in Sources */,
 				5691724B1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m in Sources */,
 				569172481B2AD498000DF4DC /* HOTConversationManager.m in Sources */,

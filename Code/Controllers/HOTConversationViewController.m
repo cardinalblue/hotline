@@ -115,7 +115,21 @@ typedef enum : NSUInteger {
 {
     [self createNewAudioRecorder];
     
-    // Adds the notification observer
+    // ---- Setup speaker phone
+    NSError *error;
+    BOOL audioSuccess = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
+                                                         withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
+                                                               error:&error];
+    if (!audioSuccess) {
+        NSLog(@"Error configuring session: %@", error.description);
+    }
+    
+    BOOL configSuccess = [[AVAudioSession sharedInstance] setActive:YES error:&error];
+    if (!configSuccess) {
+        NSLog(@"Error getting session: %@", error.description);
+    }
+    
+    // ---- Adds the notification observer
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                  name:LYRClientObjectsDidChangeNotification object:self.layerClient];
