@@ -24,8 +24,15 @@ typedef enum : NSUInteger {
     PlayStatePlaying,
     PlayStateStalled,
     PlayStatePaused,
-    PlayStateError
+    PlayStateError,
 } PlayState;
+
+typedef enum : NSUInteger {
+    RecordStateNot = 0,
+    RecordStateAudio,
+    RecordStateCameraFront,
+    RecordStateCameraBack,
+} RecordState;
 
 @interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate>
 
@@ -52,8 +59,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) LYRMessage *selectedMessage;
 @property (nonatomic, strong) NSDate     *selectedMessagePlayedAt;
 
-@property (nonatomic, assign) PlayState playState;
-@property (nonatomic, assign) BOOL      isRecordingState;
+@property (nonatomic, assign) PlayState   playState;
+@property (nonatomic, assign) RecordState recordState;
 // NOTE:
 // These two states are orthogonal, they should only interact in that
 // it shouldn't actually try to play something while recording, and that after
@@ -87,10 +94,11 @@ typedef enum : NSUInteger {
         [_dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
         
-        _isRecordingState = NO;
         
         [self initialize];
+
         [self gotoIdle];
+        [self gotoRecordStateNot];
     }
     
     return self;
@@ -207,7 +215,7 @@ typedef enum : NSUInteger {
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
     // Only actually play if we are not recording
-    if (!_isRecordingState) {
+    if (self.recordState == RecordStateNot) {
         
         self.selectedMessagePlayedAt = [[NSDate alloc] init];
         
@@ -293,7 +301,7 @@ typedef enum : NSUInteger {
                   [self.lastImageDisplayedAt timeIntervalSinceNow] > -5.0f;
 
         NSLog(@">>>> gotoNextMessage - %i,%i", t1, t2);
-        if (t1 || t2) {
+        if (t1 || t2 || self.recordState != RecordStateNot) {
             // Hold off!
             [self gotoStalled];
         }
@@ -315,6 +323,24 @@ typedef enum : NSUInteger {
     }
 }
 
+#pragma mark - Record state transtions
+- (void)gotoRecordStateNot
+{
+    NSLog(@"----gotoRecordStateNot");
+
+    self.recordState = RecordStateNot;
+    
+    [self resumePlayState];
+}
+- (void)gotoRecordStateAudio
+{
+    NSLog(@"----gotoRecordStateAudio");
+
+    [self suspendPlayState];
+    
+    self.recordState = RecordStateAudio;
+}
+
 #pragma mark - State related
 
 - (void)resumePlayState
@@ -332,16 +358,8 @@ typedef enum : NSUInteger {
 }
 - (void)stallTimeout:(NSTimer *)timer
 {
-    if (self.stallTimer == timer) {
-        if (self.playState == PlayStateStalled) {
-            [self gotoNextMessage];
-        }
-        else {
-            self.stallTimer = nil;
-        }
-    }
-    else {
-        [timer invalidate];
+    if (self.playState == PlayStateStalled) {
+        [self gotoNextMessage];
     }
 }
 - (void)imageTimeout:(NSTimer *)timer
@@ -541,7 +559,8 @@ typedef enum : NSUInteger {
 {
     if (self.playState == PlayStatePlaying) {
         [self gotoPaused];
-    } else if (self.playState == PlayStatePaused && !_isRecordingState) {
+    } else if (self.playState == PlayStatePaused &&
+               self.recordState == RecordStateNot) {
         [self gotoLoadingOrPlaying];
     }
 }
@@ -578,6 +597,12 @@ typedef enum : NSUInteger {
         }
     }
 }
+- (IBAction)swipeUp:(id)sender {
+    NSLog(@"swipeUp");
+}
+- (IBAction)swipeDown:(id)sender {
+    NSLog(@"swipeDown");
+}
 
 - (IBAction)handleNextButtonTapped:(id)sender
 {
@@ -590,6 +615,7 @@ typedef enum : NSUInteger {
     
     [self gotoNextMessage];
 }
+
 
 
 #pragma mark - AVAudioPlayerDelegate methods
@@ -632,28 +658,27 @@ typedef enum : NSUInteger {
 
 - (IBAction)handleRecordButtonTapDown:(id)sender
 {
-    _isRecordingState = YES;
+    NSLog(@"handleRecordButtonTapDown");
     
-    [self suspendPlayState];
+    [self gotoRecordStateAudio];
     
     [self.recorder record];
 }
 
 - (IBAction)handleRecordButtonTapUpOutside:(id)sender
 {
-    _isRecordingState = NO;
 
     [self.recorder stop];
     [self.recorder deleteRecording];
     
-    [self resumePlayState];
+    [self gotoRecordStateNot];
 }
 
 - (IBAction)handleRecordButtonTapUpInside:(id)sender
 {
-    _isRecordingState = NO;
 
     [self.recorder stop];
+    
     NSURL *recordingURL = self.recorder.url;
     
     LYRMessagePart *audioPart = [LYRMessagePart messagePartWithMIMEType:@"audio/mp4"
@@ -670,9 +695,8 @@ typedef enum : NSUInteger {
     
     // Reset audio recorder
     [self createNewAudioRecorder];
-
-    // Resume
-    [self resumePlayState];
+    
+    [self gotoRecordStateNot];
 }
 
 - (void)createNewAudioRecorder

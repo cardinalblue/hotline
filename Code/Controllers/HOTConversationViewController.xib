@@ -218,6 +218,7 @@
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
+                    <gestureRecognizers/>
                     <constraints>
                         <constraint firstItem="XrF-HJ-OWi" firstAttribute="height" secondItem="cNV-aT-e1x" secondAttribute="height" multiplier="0.5" id="5wd-Gt-awy"/>
                         <constraint firstItem="8MY-6r-dfO" firstAttribute="bottom" secondItem="cNV-aT-e1x" secondAttribute="bottom" id="72w-Ik-KVP"/>
@@ -232,6 +233,10 @@
                         <constraint firstAttribute="trailing" secondItem="XrF-HJ-OWi" secondAttribute="trailing" constant="10" id="vB4-wV-L1m"/>
                         <constraint firstItem="8MY-6r-dfO" firstAttribute="trailing" secondItem="cNV-aT-e1x" secondAttribute="trailing" id="zKR-8M-BZC"/>
                     </constraints>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="y2I-Ma-2KA" appends="YES" id="YbU-F5-UZ4"/>
+                        <outletCollection property="gestureRecognizers" destination="hOo-mt-ieI" appends="YES" id="rnA-ha-Sj9"/>
+                    </connections>
                 </view>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -243,6 +248,16 @@
             </constraints>
             <point key="canvasLocation" x="326" y="198"/>
         </view>
+        <swipeGestureRecognizer delaysTouchesBegan="YES" delaysTouchesEnded="NO" direction="up" numberOfTouchesRequired="2" id="y2I-Ma-2KA">
+            <connections>
+                <action selector="swipeUp:" destination="-1" id="HVN-Q7-FJ4"/>
+            </connections>
+        </swipeGestureRecognizer>
+        <swipeGestureRecognizer delaysTouchesBegan="YES" delaysTouchesEnded="NO" direction="down" numberOfTouchesRequired="2" id="hOo-mt-ieI">
+            <connections>
+                <action selector="swipeDown:" destination="-1" id="Pjc-y9-sCk"/>
+            </connections>
+        </swipeGestureRecognizer>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
