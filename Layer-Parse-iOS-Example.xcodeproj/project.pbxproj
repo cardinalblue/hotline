@@ -23,6 +23,8 @@
 		25713D6F1AC6071600FC5D38 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D651AC6071600FC5D38 /* ViewController.m */; };
 		25713D701AC6071600FC5D38 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D661AC6071600FC5D38 /* main.m */; };
 		25713D711AC6071600FC5D38 /* UserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 25713D691AC6071600FC5D38 /* UserManager.m */; };
+		5682D6E21B31633D0075248E /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5682D6E01B31633D0075248E /* Fabric.framework */; };
+		5682D6E31B31633D0075248E /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5682D6E11B31633D0075248E /* Crashlytics.framework */; };
 		569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 569172401B2A892E000DF4DC /* HOTConversationViewController.m */; };
 		569172431B2A8A9D000DF4DC /* HOTConversationViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */; };
 		569172451B2AB906000DF4DC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569172441B2AB906000DF4DC /* AVFoundation.framework */; };
@@ -71,6 +73,8 @@
 		25713D681AC6071600FC5D38 /* UserManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserManager.h; sourceTree = "<group>"; };
 		25713D691AC6071600FC5D38 /* UserManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserManager.m; sourceTree = "<group>"; };
 		4499B2833234A6B927451A87 /* Pods-Layer-Parse-iOS-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Layer-Parse-iOS-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Layer-Parse-iOS-Example/Pods-Layer-Parse-iOS-Example.release.xcconfig"; sourceTree = "<group>"; };
+		5682D6E01B31633D0075248E /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = SOURCE_ROOT; };
+		5682D6E11B31633D0075248E /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = SOURCE_ROOT; };
 		5691723F1B2A892E000DF4DC /* HOTConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOTConversationViewController.h; sourceTree = "<group>"; };
 		569172401B2A892E000DF4DC /* HOTConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationViewController.m; sourceTree = "<group>"; };
 		569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HOTConversationViewController.xib; sourceTree = "<group>"; };
@@ -101,6 +105,8 @@
 			files = (
 				569172451B2AB906000DF4DC /* AVFoundation.framework in Frameworks */,
 				DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */,
+				5682D6E31B31633D0075248E /* Crashlytics.framework in Frameworks */,
+				5682D6E21B31633D0075248E /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,6 +123,8 @@
 		18E51EBCB0F1A5E9BFBD3CE4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5682D6E01B31633D0075248E /* Fabric.framework */,
+				5682D6E11B31633D0075248E /* Crashlytics.framework */,
 				569172441B2AB906000DF4DC /* AVFoundation.framework */,
 				8C01F0B0A4201AA564136B47 /* libPods-LayerParseSampleApp.a */,
 				0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */,
@@ -259,6 +267,7 @@
 				5AD49BE21AC399DD00B1B0C8 /* Frameworks */,
 				5AD49BE31AC399DD00B1B0C8 /* Resources */,
 				924B094F20040F8949E42D26 /* Copy Pods Resources */,
+				5682D6DF1B3160E20075248E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -352,6 +361,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		5682D6DF1B3160E20075248E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "./Fabric.framework/run 80270a52c57d6f1e140c698a298494a13f175076 b69aa7aa2481c88295487f3eec3fe20bbccab7020abeafad84d3782cdaeb9b8e";
+		};
 		870ECF4D92FFE474D362E91E /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -525,12 +547,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=*]" = "8df7ee44-230f-4a69-8087-62a42328cd84";
+				"PROVISIONING_PROFILE[sdk=*]" = "a987f556-e067-4e4f-88b6-af992375ca3a";
 			};
 			name = Debug;
 		};
@@ -540,7 +566,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
