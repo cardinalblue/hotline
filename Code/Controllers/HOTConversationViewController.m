@@ -325,6 +325,11 @@ typedef enum : NSUInteger {
     if (self.playState == PlayStatePlaying)
         [self gotoPlaying];
 }
+- (void)suspendPlayState
+{
+    if (self.playState == PlayStatePlaying)
+        [self.player pause];
+}
 - (void)stallTimeout:(NSTimer *)timer
 {
     if (self.stallTimer == timer) {
@@ -465,7 +470,7 @@ typedef enum : NSUInteger {
                 // Update label
                 NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
                 self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
-                                          user.username, dateString];
+                                          user.username, dateString ?: @""];
                 
                 // Check if we should update the image or leave there
                 if (self.lastImageMessage &&
@@ -629,7 +634,7 @@ typedef enum : NSUInteger {
 {
     _isRecordingState = YES;
     
-    [self.player pause];        // Pause whatever playback
+    [self suspendPlayState];
     
     [self.recorder record];
 }
