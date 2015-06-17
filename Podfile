@@ -6,6 +6,7 @@ target 'Layer-Parse-iOS-Example' do
   pod 'Parse'
   pod 'ParseUI'
   pod 'SVProgressHUD'
+  pod 'PBJVision'
   
   # Custom
   pod 'ObjcAssociatedObjectHelpers'

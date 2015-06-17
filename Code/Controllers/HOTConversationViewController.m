@@ -13,6 +13,8 @@
 #import "LYRMessage+HOTAdditions.h"
 #import <QuartzCore/QuartzCore.h>
 
+#import "PBJVision.h"
+
 #import "ConversationViewController.h"
 #import "HOTConversationViewController.h"
 
@@ -34,11 +36,15 @@ typedef enum : NSUInteger {
     RecordStateCameraBack,
 } RecordState;
 
-@interface HOTConversationViewController () <AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate>
+@interface HOTConversationViewController ()
+<AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
 @property (nonatomic, weak) IBOutlet UIButton *playButton;
+@property (weak, nonatomic) IBOutlet UIView *recordButton;
+@property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *recordButtonLongPressGestureRecognizer;
+@property (weak, nonatomic) IBOutlet UILabel *recordButtonLabel;
 
 @property (nonatomic, weak) IBOutlet UIButton *countPrev;
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
@@ -328,18 +334,85 @@ typedef enum : NSUInteger {
 {
     NSLog(@"----gotoRecordStateNot");
 
+    self.recordButtonLabel.text = @"Record";
+    self.recordButton.layer.borderColor = [[UIColor whiteColor] CGColor];
+    self.recordButton.backgroundColor = [UIColor clearColor];
+    self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.5f;
+    self.recordButtonLongPressGestureRecognizer.allowableMovement = 2;
+
     self.recordState = RecordStateNot;
     
+    // ---- Camera preview
+    PBJVision *pbj = [PBJVision sharedInstance];
+    AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
+    [layer removeFromSuperlayer];
+
+    // ---- State
     [self resumePlayState];
 }
 - (void)gotoRecordStateAudio
 {
     NSLog(@"----gotoRecordStateAudio");
 
+    self.recordButtonLabel.text = @"Recording";
+    self.recordButton.layer.borderColor = [[UIColor whiteColor] CGColor];
+    self.recordButton.backgroundColor = [UIColor redColor];
+    
     [self suspendPlayState];
     
     self.recordState = RecordStateAudio;
 }
+- (void)gotoRecordStateCameraFront
+{
+    NSLog(@"----gotoRecordStateCameraFront");
+    
+    self.recordButtonLabel.text = @"Selfie";
+    self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
+    self.recordButton.backgroundColor = [UIColor clearColor];
+    self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
+
+    [self suspendPlayState];
+ 
+    // ---- Camera preview
+    PBJVision *pbj = [PBJVision sharedInstance];
+    pbj.cameraMode = PBJCameraDeviceFront;
+
+    AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
+    layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+
+    UIView *superview = self.imageView;
+    layer.frame = superview.bounds;
+    [superview.layer addSublayer:layer];
+    
+    // ---- State
+    self.recordState = RecordStateCameraFront;
+}
+- (void)gotoRecordStateCameraBack
+{
+    NSLog(@"----gotoRecordStateCameraBack");
+    
+    self.recordButtonLabel.text = @"Photo";
+    self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
+    self.recordButton.backgroundColor = [UIColor clearColor];
+    self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
+    
+    [self suspendPlayState];
+    
+    // ---- Camera preview
+    PBJVision *pbj = [PBJVision sharedInstance];
+    pbj.cameraMode = PBJCameraDeviceBack;
+
+    AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
+    layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+
+    UIView *superview = self.imageView;
+    layer.frame = superview.bounds;
+    [superview.layer addSublayer:layer];
+    
+    // ---- State
+    self.recordState = RecordStateCameraBack;
+}
+
 
 #pragma mark - State related
 
@@ -526,7 +599,7 @@ typedef enum : NSUInteger {
                 }];
                  
                 
-                NSLog(@"avatar %@", userAvatar);
+                // NSLog(@"avatar %@", userAvatar);
             }];
         }
         
@@ -540,6 +613,12 @@ typedef enum : NSUInteger {
     self.lastImageMessage = nil;
     self.lastImageDisplayedAt = nil;
     self.selectedMessagePlayedAt = nil;
+}
+- (AVCaptureVideoPreviewLayer *)cameraPreviewLayer
+{
+    AVCaptureVideoPreviewLayer *layer = [[PBJVision sharedInstance] previewLayer];
+    layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+    return layer;
 }
 
 #pragma mark - UI Handlers
@@ -599,9 +678,23 @@ typedef enum : NSUInteger {
 }
 - (IBAction)swipeUp:(id)sender {
     NSLog(@"swipeUp");
+    
+    if (self.recordState == RecordStateNot)
+        [self gotoRecordStateCameraFront];
+    else if (self.recordState == RecordStateCameraFront)
+        [self gotoRecordStateCameraBack];
+    else if (self.recordState == RecordStateCameraBack)
+        [self gotoRecordStateNot];
 }
 - (IBAction)swipeDown:(id)sender {
     NSLog(@"swipeDown");
+
+    if (self.recordState == RecordStateNot)
+        [self gotoRecordStateCameraBack];
+    else if (self.recordState == RecordStateCameraBack)
+        [self gotoRecordStateCameraFront];
+    else if (self.recordState == RecordStateCameraFront)
+        [self gotoRecordStateNot];
 }
 
 - (IBAction)handleNextButtonTapped:(id)sender
@@ -656,17 +749,48 @@ typedef enum : NSUInteger {
 
 #pragma mark - Record Button modes
 
-- (IBAction)handleRecordButtonTapDown:(id)sender
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    NSLog(@"handleRecordButtonTapDown");
+    if ([otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]])
+        return YES;
+    return NO;
+}
+- (IBAction)recordButtonLongPress:(UILongPressGestureRecognizer *)recognizer
+{
+    NSLog(@"recordButtonLongPress %@", recognizer);
+    
+    if (self.recordState == RecordStateNot &&
+        recognizer.state == UIGestureRecognizerStateBegan) {
+        
+        [self handleRecordStart];
+    }
+    else if (self.recordState == RecordStateAudio &&
+             recognizer.state == UIGestureRecognizerStateEnded) {
+        
+        UIView *view = recognizer.view;
+        CGPoint location = [recognizer locationInView:view];
+        if ([view pointInside:location withEvent:nil]) {
+            [self handleRecordEnd];
+        }
+        else {
+            [self handleRecordCancel];
+        }
+    }
+}
+
+- (void)handleRecordStart
+{
+    NSLog(@"handleRecordStart");
     
     [self gotoRecordStateAudio];
     
     [self.recorder record];
 }
 
-- (IBAction)handleRecordButtonTapUpOutside:(id)sender
+- (void)handleRecordCancel
 {
+    NSLog(@"handleRecordCancel");
 
     [self.recorder stop];
     [self.recorder deleteRecording];
@@ -674,8 +798,9 @@ typedef enum : NSUInteger {
     [self gotoRecordStateNot];
 }
 
-- (IBAction)handleRecordButtonTapUpInside:(id)sender
+- (void)handleRecordEnd
 {
+    NSLog(@"handleRecordEnd");
 
     [self.recorder stop];
     
