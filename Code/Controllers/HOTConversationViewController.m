@@ -37,15 +37,21 @@ typedef enum : NSUInteger {
 } RecordState;
 
 @interface HOTConversationViewController ()
-<AVAudioRecorderDelegate, AVAudioPlayerDelegate, LYRProgressDelegate, UIGestureRecognizerDelegate>
+<AVAudioRecorderDelegate, AVAudioPlayerDelegate,
+LYRProgressDelegate,
+UIGestureRecognizerDelegate,
+PBJVisionDelegate
+>
+
+@property (weak, nonatomic) IBOutlet UIView *cameraView;
 
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
 @property (nonatomic, weak) IBOutlet UIButton *playButton;
-@property (weak, nonatomic) IBOutlet UIView *recordButton;
+@property (weak, nonatomic) IBOutlet UIView                         *recordButton;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *recordButtonLongPressGestureRecognizer;
-@property (weak, nonatomic) IBOutlet UILabel *recordButtonLabel;
-@property (weak, nonatomic) IBOutlet UIView *cameraView;
+@property (weak, nonatomic) IBOutlet UILabel                        *recordButtonLabel;
+@property (nonatomic, strong) NSDate                                *recordButtonLongPressBegan;
 
 @property (nonatomic, weak) IBOutlet UIButton *countPrev;
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
@@ -114,6 +120,9 @@ typedef enum : NSUInteger {
 - (void)initialize
 {
     [self createNewAudioRecorder];
+    
+    [PBJVision sharedInstance].delegate = self;
+    [[PBJVision sharedInstance] setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)]; // ~ 5 seconds
     
     // ---- Setup speaker phone
     NSError *error;
@@ -781,22 +790,36 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
 {
     NSLog(@"recordButtonLongPress %@", recognizer);
     
-    if (self.recordState == RecordStateNot &&
-        recognizer.state == UIGestureRecognizerStateBegan) {
-        
-        [self handleRecordStart];
+    // Time
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        self.recordButtonLongPressBegan = [[NSDate alloc] init];
+    
+        if (self.recordState == RecordStateNot)
+            [self handleRecordStart];
     }
-    else if (self.recordState == RecordStateAudio &&
-             recognizer.state == UIGestureRecognizerStateEnded) {
+    else if (recognizer.state == UIGestureRecognizerStateEnded) {
+
+        if (self.recordState == RecordStateAudio) {
+            
+            UIView *view = recognizer.view;
+            CGPoint location = [recognizer locationInView:view];
+            if ([view pointInside:location withEvent:nil]) {
+                [self handleRecordEnd];
+            }
+            else {
+                [self handleRecordCancel];
+            }
+        }
+        if (self.recordState == RecordStateCameraBack ||
+            self.recordState == RecordStateCameraFront) {
+            
+            if ([self.recordButtonLongPressBegan timeIntervalSinceNow] > -0.7f) {
+                PBJVision *pbj = [PBJVision sharedInstance];
+                pbj.cameraMode = PBJCameraModePhoto;
+                [pbj capturePhoto];
+            }
+        }
         
-        UIView *view = recognizer.view;
-        CGPoint location = [recognizer locationInView:view];
-        if ([view pointInside:location withEvent:nil]) {
-            [self handleRecordEnd];
-        }
-        else {
-            [self handleRecordCancel];
-        }
     }
 }
 
@@ -874,5 +897,30 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
     
     return outputFileURL;
 }
+
+#pragma mark - Camera capture
+
+- (void)vision:(PBJVision *)vision
+ capturedPhoto:(nullable NSDictionary *)photoDict
+         error:(nullable NSError *)error
+{
+    UIImage *image = [photoDict objectForKey:PBJVisionPhotoImageKey];
+    NSLog(@"capturedPhoto: %@", image);
+    
+    NSData *data = UIImageJPEGRepresentation(image, 0.5f);
+    LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:@"image/jpeg"
+                                                              data:data];
+    
+    NSError *error2;
+    LYRMessage *message = [self.layerClient newMessageWithParts:@[part]
+                                                        options:nil
+                                                          error:&error2];
+    
+    BOOL validated = [self.conversation sendMessage:message error:&error2];
+    if (!validated) {
+        NSLog(@"Error sending message: %@", error2);
+    }
+}
+
 
 @end
