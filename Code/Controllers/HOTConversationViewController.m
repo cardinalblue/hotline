@@ -45,6 +45,7 @@ typedef enum : NSUInteger {
 @property (weak, nonatomic) IBOutlet UIView *recordButton;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *recordButtonLongPressGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UILabel *recordButtonLabel;
+@property (weak, nonatomic) IBOutlet UIView *cameraView;
 
 @property (nonatomic, weak) IBOutlet UIButton *countPrev;
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
@@ -346,6 +347,8 @@ typedef enum : NSUInteger {
     PBJVision *pbj = [PBJVision sharedInstance];
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
     [layer removeFromSuperlayer];
+    
+    [pbj stopPreview];
 
     // ---- State
     [self resumePlayState];
@@ -380,9 +383,11 @@ typedef enum : NSUInteger {
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 
-    UIView *superview = self.imageView;
+    UIView *superview = self.cameraView;
     layer.frame = superview.bounds;
     [superview.layer addSublayer:layer];
+    
+    [pbj startPreview];
     
     // ---- State
     self.recordState = RecordStateCameraFront;
@@ -405,10 +410,12 @@ typedef enum : NSUInteger {
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
 
-    UIView *superview = self.imageView;
+    UIView *superview = self.cameraView;
     layer.frame = superview.bounds;
     [superview.layer addSublayer:layer];
-    
+
+    [pbj startPreview];
+
     // ---- State
     self.recordState = RecordStateCameraBack;
 }
