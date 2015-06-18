@@ -315,7 +315,7 @@ PBJVisionDelegate
     self.playState = PlayStateStalled;
 
     self.activityIndicator.hidden = YES;
-    [self.playButton setTitle:@"*" forState:UIControlStateNormal];
+    [self.playButton setTitle:@".||." forState:UIControlStateNormal];
     
     // Setup timer
     [self.stallTimer invalidate];
@@ -375,6 +375,10 @@ PBJVisionDelegate
             [self gotoError:error];
         }
         else {
+            // Go to next!
+            self.selectedMessage = nil;
+            self.selectedMessagePlayedAt = nil;
+            [self updateCounts];
             [self gotoIdle];
         }
     }
@@ -628,6 +632,7 @@ PBJVisionDelegate
                 NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
                 self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
                                           user.username, dateString ?: @""];
+                [self pulseView:self.playingLabel];
                 
                 // Check if we should update the image or leave there
                 if (self.lastImageMessage &&
@@ -685,6 +690,16 @@ PBJVisionDelegate
     AVCaptureVideoPreviewLayer *layer = [[PBJVision sharedInstance] previewLayer];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     return layer;
+}
+- (void)pulseView:(UIView *)view
+{
+    [UIView animateWithDuration:0.1f animations:^{
+        view.transform = CGAffineTransformMakeScale(1.3f, 1.3f);
+    } completion:^(BOOL finished) {
+        [UIView animateWithDuration:0.1f animations:^{
+            view.transform = CGAffineTransformMakeScale(1.0f, 1.0f);
+        }];
+    }];
 }
 
 #pragma mark - UI Handlers
