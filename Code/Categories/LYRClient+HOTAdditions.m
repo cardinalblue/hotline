@@ -124,7 +124,7 @@
                                                predicateOperator:LYRPredicateOperatorIsLessThan
                                                            value:[NSNumber numberWithLongLong:previousMessage.position]];
     LYRPredicate *posPostP = [LYRPredicate predicateWithProperty:@"position"
-                                               predicateOperator:LYRPredicateOperatorIsGreaterThan
+                                               predicateOperator:LYRPredicateOperatorIsGreaterThanOrEqualTo
                                                            value:[NSNumber numberWithLongLong:previousMessage.position]];
     LYRPredicate *unreadP  = [LYRPredicate predicateWithProperty:@"isUnread"
                                                predicateOperator:LYRPredicateOperatorIsEqualTo
