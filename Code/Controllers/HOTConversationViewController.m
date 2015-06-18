@@ -710,6 +710,13 @@ PBJVisionDelegate
                self.recordState == RecordStateNot) {
         [self gotoLoadingOrPlaying];
     }
+
+    // Set the RecordState.
+    // Do it after the playing state because this might
+    // make it change state again.
+    if (self.recordState == RecordStateCameraBack ||
+        self.recordState == RecordStateCameraFront)
+        [self gotoRecordStateNot];
 }
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
@@ -747,6 +754,14 @@ PBJVisionDelegate
             [self gotoIdle];
         }
     }
+
+    // Set the RecordState.
+    // Do it after the playing state because this might
+    // make it change state again.
+    if (self.recordState == RecordStateCameraBack ||
+        self.recordState == RecordStateCameraFront)
+        [self gotoRecordStateNot];
+    
 }
 
 - (IBAction)handleNextButtonTapped:(id)sender
@@ -760,6 +775,13 @@ PBJVisionDelegate
     [self clearMessageTimes];
     
     [self gotoNextMessage];
+    
+    // Set the RecordState.
+    // Do it after the playing state because this might
+    // make it change state again.
+    if (self.recordState == RecordStateCameraBack ||
+        self.recordState == RecordStateCameraFront)
+        [self gotoRecordStateNot];
 }
 
 - (IBAction)swipeUp:(id)sender {
