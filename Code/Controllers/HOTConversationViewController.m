@@ -48,16 +48,20 @@ PBJVisionDelegate
 @property (nonatomic, weak) IBOutlet UIButton *nextButton;
 @property (nonatomic, weak) IBOutlet UIButton *previousButton;
 @property (nonatomic, weak) IBOutlet UIButton *playButton;
+
 @property (weak, nonatomic) IBOutlet UIView                         *recordButton;
 @property (strong, nonatomic) IBOutlet UILongPressGestureRecognizer *recordButtonLongPressGestureRecognizer;
 @property (weak, nonatomic) IBOutlet UILabel                        *recordButtonLabel;
 @property (nonatomic, strong) NSDate                                *recordButtonLongPressBegan;
+@property (weak, nonatomic) IBOutlet UILabel                        *recordButtonHintLabel;
 
 @property (nonatomic, weak) IBOutlet UIButton *countPrev;
 @property (nonatomic, weak) IBOutlet UIButton *countNext;
 @property (nonatomic, weak) IBOutlet UIButton *countUnread;
 @property (weak, nonatomic) IBOutlet UILabel  *playingLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @property (nonatomic, strong) LYRClient *layerClient;
 @property (nonatomic, strong) AVAudioRecorder *recorder;
@@ -81,6 +85,8 @@ PBJVisionDelegate
 
 @property (nonatomic, strong) LYRMessage *lastImageMessage;
 @property (nonatomic, strong) NSDate     *lastImageDisplayedAt;
+
+@property (nonatomic, strong) NSMutableSet *lastSentMessages;
 
 // ---------------------------------------------------------------------
 
@@ -107,10 +113,9 @@ PBJVisionDelegate
         [_dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
         
+        _lastSentMessages = [[NSMutableSet alloc] init];
+        
         [self initialize];
-
-        [self gotoIdle];
-        [self gotoRecordStateNot];
     }
     
     return self;
@@ -147,6 +152,9 @@ PBJVisionDelegate
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self gotoIdle];
+    [self gotoRecordStateNot];    
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.navigationItem.rightBarButtonItem =
@@ -211,7 +219,10 @@ PBJVisionDelegate
 - (void)gotoError:(NSError *)error
 {
     self.playState = PlayStateError;
+    
+    self.activityIndicator.hidden = YES;
     [self.playButton setTitle:@"ERROR" forState:UIControlStateNormal];
+    
     NSLog(@">>>>>>>>>> ERROR %@", error);
 
 }
@@ -230,7 +241,9 @@ PBJVisionDelegate
     else {
         NSLog(@">>>> PlayStateLoading");
         self.playState = PlayStateLoading;
-        [self.playButton setTitle:@"( )" forState:UIControlStateNormal];
+
+        self.activityIndicator.hidden = NO;
+        [self.playButton setTitle:@"" forState:UIControlStateNormal];
     }
 }
 
@@ -241,6 +254,7 @@ PBJVisionDelegate
 
     self.playState = PlayStatePlaying;
     
+    self.activityIndicator.hidden = YES;
     [self.playButton setTitle:@"||" forState:UIControlStateNormal];
     
     // Only actually play if we are not recording
@@ -273,6 +287,7 @@ PBJVisionDelegate
 
     self.playState = PlayStateIdle;
     
+    self.activityIndicator.hidden = YES;
     [self.playButton setTitle:@"..." forState:UIControlStateNormal];
 }
 
@@ -285,6 +300,7 @@ PBJVisionDelegate
     
     [self.player pause];
     
+    self.activityIndicator.hidden = YES;
     [self.playButton setTitle:@">" forState:UIControlStateNormal];
 }
 
@@ -293,6 +309,7 @@ PBJVisionDelegate
     NSLog(@">>>> PlayStateStalled");
     self.playState = PlayStateStalled;
 
+    self.activityIndicator.hidden = YES;
     [self.playButton setTitle:@"*" forState:UIControlStateNormal];
     
     // Setup timer
@@ -310,12 +327,18 @@ PBJVisionDelegate
     NSAssert(self.selectedMessage, @"gotoNextMessage no selectedMessage");
 
     NSError *error;
-    LYRMessage *next;
-    if (!self.selectedMessage)
-        next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
-    else
-        next = [self.layerClient messageAfter:self.selectedMessage error:&error];
+    LYRMessage *next = self.selectedMessage;
     
+    // Get either unread ones or the next one.
+    // Skip the ones that were just sent.
+    do {
+        if (!next)
+            next = [self.layerClient firstUnreadFromConversation:self.conversation error:&error];
+        else
+            next = [self.layerClient messageAfter:next error:&error];
+    } while (next && [self.lastSentMessages containsObject:next.identifier]);
+    
+    // Play, load or stall
     if (next) {
         
         // See if the last image was displayed long enough (or from the same
@@ -360,9 +383,10 @@ PBJVisionDelegate
     self.recordButtonLabel.text = @"Record";
     self.recordButton.layer.borderColor = [[UIColor whiteColor] CGColor];
     self.recordButton.backgroundColor = [UIColor clearColor];
-    self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.5f;
+    self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.2f;
     self.recordButtonLongPressGestureRecognizer.allowableMovement = 2;
-
+    self.recordButtonHintLabel.text = @"Hold to record.\nSwipe up or down to switch recording mode";
+    
     self.recordState = RecordStateNot;
     
     // ---- Camera preview
@@ -382,6 +406,7 @@ PBJVisionDelegate
     self.recordButtonLabel.text = @"Recording";
     self.recordButton.layer.borderColor = [[UIColor whiteColor] CGColor];
     self.recordButton.backgroundColor = [UIColor redColor];
+    self.recordButtonHintLabel.text = @"";
     
     [self suspendPlayState];
     
@@ -395,6 +420,7 @@ PBJVisionDelegate
     self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
     self.recordButton.backgroundColor = [UIColor clearColor];
     self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
+    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video";
 
     [self suspendPlayState];
  
@@ -422,6 +448,7 @@ PBJVisionDelegate
     self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
     self.recordButton.backgroundColor = [UIColor clearColor];
     self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
+    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video";
     
     [self suspendPlayState];
     
@@ -445,6 +472,13 @@ PBJVisionDelegate
 
 #pragma mark - State related
 
+- (void)suspendPlayState
+{
+    if (self.playState == PlayStatePlaying)
+        [self.player pause];
+    if (self.playState == PlayStateLoading)
+        self.activityIndicator.hidden = YES;
+}
 - (void)resumePlayState
 {
     // Only thing that has to be resumed is "playing", otherwise things should
@@ -452,11 +486,9 @@ PBJVisionDelegate
     //
     if (self.playState == PlayStatePlaying)
         [self gotoPlaying];
-}
-- (void)suspendPlayState
-{
-    if (self.playState == PlayStatePlaying)
-        [self.player pause];
+    if (self.playState == PlayStateLoading)
+        self.activityIndicator.hidden = NO;
+
 }
 - (void)stallTimeout:(NSTimer *)timer
 {
@@ -665,6 +697,8 @@ PBJVisionDelegate
 
 - (IBAction)handlePlayButtonTapped:(id)sender
 {
+    self.statusLabel.text = @"";
+    
     if (self.playState == PlayStatePlaying) {
         [self gotoPaused];
     } else if (self.playState == PlayStatePaused &&
@@ -675,7 +709,11 @@ PBJVisionDelegate
 
 - (IBAction)handlePreviousButtonTapped:(id)sender
 {
+    self.statusLabel.text = @"";
+
     [self clearMessageTimes];
+    
+    [self.lastSentMessages removeAllObjects];
     
     NSError *error;
     LYRMessage *prev;
@@ -705,8 +743,24 @@ PBJVisionDelegate
         }
     }
 }
+
+- (IBAction)handleNextButtonTapped:(id)sender
+{
+    self.statusLabel.text = @"";
+    
+    // Do nothing if no message
+    if (!self.selectedMessage)
+        return;
+    
+    [self clearMessageTimes];
+    
+    [self gotoNextMessage];
+}
+
 - (IBAction)swipeUp:(id)sender {
     NSLog(@"swipeUp");
+
+    self.statusLabel.text = @"";
     
     if (self.recordState == RecordStateNot)
         [self gotoRecordStateCameraFront];
@@ -718,6 +772,8 @@ PBJVisionDelegate
 - (IBAction)swipeDown:(id)sender {
     NSLog(@"swipeDown");
 
+    self.statusLabel.text = @"";
+
     if (self.recordState == RecordStateNot)
         [self gotoRecordStateCameraBack];
     else if (self.recordState == RecordStateCameraBack)
@@ -725,19 +781,6 @@ PBJVisionDelegate
     else if (self.recordState == RecordStateCameraFront)
         [self gotoRecordStateNot];
 }
-
-- (IBAction)handleNextButtonTapped:(id)sender
-{
-    
-    // Do nothing if no message
-    if (!self.selectedMessage)
-        return;
-
-    [self clearMessageTimes];
-    
-    [self gotoNextMessage];
-}
-
 
 
 #pragma mark - AVAudioPlayerDelegate methods
@@ -859,6 +902,11 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
     BOOL validated = [self.conversation sendMessage:message error:&error];
     if (!validated) {
         NSLog(@"Error sending message: %@", error);
+        self.statusLabel.text = @"Error sending last message...";
+    }
+    else {
+        self.statusLabel.text = @"Sent ok!";
+        [self.lastSentMessages addObject:message.identifier];
     }
     
     // Reset audio recorder
@@ -917,8 +965,14 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
     
     BOOL validated = [self.conversation sendMessage:message error:&error2];
     if (!validated) {
-        NSLog(@"Error sending message: %@", error2);
+        NSLog(@"Error sending message: %@", error);
+        self.statusLabel.text = @"Error sending last message...";
     }
+    else {
+        self.statusLabel.text = @"Sent ok!";
+        [self.lastSentMessages addObject:message.identifier];
+    }
+    
 }
 
 
