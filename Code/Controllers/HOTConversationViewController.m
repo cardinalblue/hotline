@@ -431,7 +431,7 @@ PBJVisionDelegate
  
     // ---- Camera preview
     PBJVision *pbj = [PBJVision sharedInstance];
-    pbj.cameraMode = PBJCameraDeviceFront;
+    pbj.cameraDevice = PBJCameraDeviceFront;
 
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
@@ -459,7 +459,7 @@ PBJVisionDelegate
     
     // ---- Camera preview
     PBJVision *pbj = [PBJVision sharedInstance];
-    pbj.cameraMode = PBJCameraDeviceBack;
+    pbj.cameraDevice = PBJCameraDeviceBack;
 
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
