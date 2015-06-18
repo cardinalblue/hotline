@@ -36,6 +36,11 @@ typedef enum : NSUInteger {
     RecordStateCameraBack,
 } RecordState;
 
+const CGFloat MINIMUM_PHOTO_PRESS_TIME  = 0.7f;
+const CGFloat MINIMUM_RECORD_AUDIO_TIME = 1.0f;
+const CGFloat MINIMUM_PLAY_IMAGE_TIME   = 5.0f;
+const CGFloat MIMIMUM_PLAY_AUDIO_TIME   = 1.0f;
+
 @interface HOTConversationViewController ()
 <AVAudioRecorderDelegate, AVAudioPlayerDelegate,
 LYRProgressDelegate,
@@ -154,7 +159,7 @@ PBJVisionDelegate
     [super viewDidLoad];
     
     [self gotoIdle];
-    [self gotoRecordStateNot];    
+    [self gotoRecordStateNot];
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.navigationItem.rightBarButtonItem =
@@ -346,11 +351,11 @@ PBJVisionDelegate
         //
         BOOL t1 = self.selectedMessage &&
                   self.selectedMessagePlayedAt &&
-                  [self.selectedMessagePlayedAt timeIntervalSinceNow] > -1.0f;
+                  [self.selectedMessagePlayedAt timeIntervalSinceNow] > -MIMIMUM_PLAY_AUDIO_TIME;
         BOOL t2 = self.lastImageMessage &&
                   self.lastImageMessage.sender && next.sender &&
                   self.lastImageMessage.sender.userID != next.sender.userID &&
-                  [self.lastImageDisplayedAt timeIntervalSinceNow] > -5.0f;
+                  [self.lastImageDisplayedAt timeIntervalSinceNow] > -MINIMUM_PLAY_IMAGE_TIME;
 
         NSLog(@">>>> gotoNextMessage - %i,%i", t1, t2);
         if (t1 || t2 || self.recordState != RecordStateNot) {
@@ -845,7 +850,9 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
             
             UIView *view = recognizer.view;
             CGPoint location = [recognizer locationInView:view];
-            if ([view pointInside:location withEvent:nil]) {
+            if ([view pointInside:location withEvent:nil] &&
+                [self.recordButtonLongPressBegan timeIntervalSinceNow] < -MINIMUM_RECORD_AUDIO_TIME
+                ) {
                 [self handleRecordEnd];
             }
             else {
@@ -855,7 +862,7 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
         if (self.recordState == RecordStateCameraBack ||
             self.recordState == RecordStateCameraFront) {
             
-            if ([self.recordButtonLongPressBegan timeIntervalSinceNow] > -0.7f) {
+            if ([self.recordButtonLongPressBegan timeIntervalSinceNow] > -MINIMUM_PHOTO_PRESS_TIME) {
                 PBJVision *pbj = [PBJVision sharedInstance];
                 pbj.cameraMode = PBJCameraModePhoto;
                 [pbj capturePhoto];
