@@ -132,20 +132,19 @@ PBJVisionDelegate
     
     [PBJVision sharedInstance].delegate = self;
     [[PBJVision sharedInstance] setMaximumCaptureDuration:CMTimeMakeWithSeconds(5, 600)]; // ~ 5 seconds
+
     
     // ---- Setup speaker phone
     NSError *error;
     BOOL audioSuccess = [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord
                                                          withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker
                                                                error:&error];
-    if (!audioSuccess) {
+    if (!audioSuccess)
         NSLog(@"Error configuring session: %@", error.description);
-    }
-    
     BOOL configSuccess = [[AVAudioSession sharedInstance] setActive:YES error:&error];
-    if (!configSuccess) {
+    if (!configSuccess)
         NSLog(@"Error getting session: %@", error.description);
-    }
+
     
     // ---- Adds the notification observer
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -158,7 +157,6 @@ PBJVisionDelegate
 {
     [super viewDidLoad];
     
-    [self gotoIdle];
     [self gotoRecordStateNot];
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -210,6 +208,9 @@ PBJVisionDelegate
     
     LYRMessagePart *part = [self.selectedMessage partPlayable];
     if (!part) {
+        // Legacy case, make read so it doesn't show up again
+        [self.selectedMessage markAsRead:nil];
+        
         // Ooops bad message, go to next one
         [self gotoNextMessage];
     }
@@ -512,6 +513,8 @@ PBJVisionDelegate
         if (timer.userInfo == self.selectedMessage &&
             self.playState == PlayStatePlaying) {
         
+            [self.selectedMessage markAsRead:nil];
+            
             [self gotoNextMessage];
         }
     }
