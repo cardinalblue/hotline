@@ -32,6 +32,7 @@
 		5691724B1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */; };
 		5691724E1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
+		61C3844CE21C3A5AB46D1477 /* libPods-Hotline.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C86BF0EA9B0211AFCA3640E1 /* libPods-Hotline.a */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
 		959081421B3171A600A02E4F /* CALayer+XibConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */; };
 		DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */; };
@@ -86,19 +87,22 @@
 		5691724A1B2AD982000DF4DC /* LYRMessage+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "LYRMessage+HOTAdditions.m"; path = "../Controllers/LYRMessage+HOTAdditions.m"; sourceTree = "<group>"; };
 		5691724C1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRMessagePart+HOTAdditions.h"; sourceTree = "<group>"; };
 		5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRMessagePart+HOTAdditions.m"; sourceTree = "<group>"; };
-		5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Layer-Parse-iOS-Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Layer-Parse-iOS-ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AD49BE51AC399DD00B1B0C8 /* Hotline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hotline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "Layer-Parse-iOS-ExampleTests.xctest"; path = HotlineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD49C031AC399DD00B1B0C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LayerParseSampleAppTests.m; sourceTree = "<group>"; };
 		5D2577FDB282E79E4AA3E979 /* Pods-Layer-Parse-iOS-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Layer-Parse-iOS-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Layer-Parse-iOS-Example/Pods-Layer-Parse-iOS-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		7C9C7A409749305E466D6414 /* Pods-Hotline.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hotline.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hotline/Pods-Hotline.release.xcconfig"; sourceTree = "<group>"; };
 		8C01F0B0A4201AA564136B47 /* libPods-LayerParseSampleApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-LayerParseSampleApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9503C3BB1B2A7CA90083DC10 /* Keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keys.h; sourceTree = "<group>"; };
 		9503C3BC1B2AA7F20083DC10 /* LYRClient+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRClient+HOTAdditions.h"; sourceTree = "<group>"; };
 		9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRClient+HOTAdditions.m"; sourceTree = "<group>"; };
 		959081401B3171A600A02E4F /* CALayer+XibConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CALayer+XibConfiguration.h"; sourceTree = "<group>"; };
 		959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CALayer+XibConfiguration.m"; sourceTree = "<group>"; };
+		9649DDBCE515125228FDE8C3 /* Pods-Hotline.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hotline.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Hotline/Pods-Hotline.debug.xcconfig"; sourceTree = "<group>"; };
 		B229D8D6557B45378ED2CD58 /* Pods-LayerParseSampleApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LayerParseSampleApp.debug.xcconfig"; path = "Pods/Target Support Files/Pods-LayerParseSampleApp/Pods-LayerParseSampleApp.debug.xcconfig"; sourceTree = "<group>"; };
 		B6B8E20DF9188E775F70E276 /* Pods-LayerParseSampleApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-LayerParseSampleApp.release.xcconfig"; path = "Pods/Target Support Files/Pods-LayerParseSampleApp/Pods-LayerParseSampleApp.release.xcconfig"; sourceTree = "<group>"; };
+		C86BF0EA9B0211AFCA3640E1 /* libPods-Hotline.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Hotline.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,7 @@
 				DE21CBC9179B78114E756630 /* libPods-Layer-Parse-iOS-Example.a in Frameworks */,
 				5682D6E31B31633D0075248E /* Crashlytics.framework in Frameworks */,
 				5682D6E21B31633D0075248E /* Fabric.framework in Frameworks */,
+				61C3844CE21C3A5AB46D1477 /* libPods-Hotline.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +136,7 @@
 				569172441B2AB906000DF4DC /* AVFoundation.framework */,
 				8C01F0B0A4201AA564136B47 /* libPods-LayerParseSampleApp.a */,
 				0BB020A6C940784334B46A30 /* libPods-Layer-Parse-iOS-Example.a */,
+				C86BF0EA9B0211AFCA3640E1 /* libPods-Hotline.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -226,7 +232,7 @@
 		5AD49BE61AC399DD00B1B0C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */,
+				5AD49BE51AC399DD00B1B0C8 /* Hotline.app */,
 				5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */,
 			);
 			name = Products;
@@ -256,6 +262,8 @@
 				B6B8E20DF9188E775F70E276 /* Pods-LayerParseSampleApp.release.xcconfig */,
 				5D2577FDB282E79E4AA3E979 /* Pods-Layer-Parse-iOS-Example.debug.xcconfig */,
 				4499B2833234A6B927451A87 /* Pods-Layer-Parse-iOS-Example.release.xcconfig */,
+				9649DDBCE515125228FDE8C3 /* Pods-Hotline.debug.xcconfig */,
+				7C9C7A409749305E466D6414 /* Pods-Hotline.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -263,9 +271,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		5AD49BE41AC399DD00B1B0C8 /* Layer-Parse-iOS-Example */ = {
+		5AD49BE41AC399DD00B1B0C8 /* Hotline */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5AD49C081AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Layer-Parse-iOS-Example" */;
+			buildConfigurationList = 5AD49C081AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Hotline" */;
 			buildPhases = (
 				870ECF4D92FFE474D362E91E /* Check Pods Manifest.lock */,
 				5AD49BE11AC399DD00B1B0C8 /* Sources */,
@@ -278,14 +286,14 @@
 			);
 			dependencies = (
 			);
-			name = "Layer-Parse-iOS-Example";
+			name = Hotline;
 			productName = LayerParseSampleApp;
-			productReference = 5AD49BE51AC399DD00B1B0C8 /* Layer-Parse-iOS-Example.app */;
+			productReference = 5AD49BE51AC399DD00B1B0C8 /* Hotline.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5AD49BFD1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests */ = {
+		5AD49BFD1AC399DD00B1B0C8 /* HotlineTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5AD49C0B1AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Layer-Parse-iOS-ExampleTests" */;
+			buildConfigurationList = 5AD49C0B1AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "HotlineTests" */;
 			buildPhases = (
 				5AD49BFA1AC399DD00B1B0C8 /* Sources */,
 				5AD49BFB1AC399DD00B1B0C8 /* Frameworks */,
@@ -296,7 +304,7 @@
 			dependencies = (
 				5AD49C001AC399DD00B1B0C8 /* PBXTargetDependency */,
 			);
-			name = "Layer-Parse-iOS-ExampleTests";
+			name = HotlineTests;
 			productName = LayerParseSampleAppTests;
 			productReference = 5AD49BFE1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -334,8 +342,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5AD49BE41AC399DD00B1B0C8 /* Layer-Parse-iOS-Example */,
-				5AD49BFD1AC399DD00B1B0C8 /* Layer-Parse-iOS-ExampleTests */,
+				5AD49BE41AC399DD00B1B0C8 /* Hotline */,
+				5AD49BFD1AC399DD00B1B0C8 /* HotlineTests */,
 			);
 		};
 /* End PBXProject section */
@@ -407,7 +415,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Layer-Parse-iOS-Example/Pods-Layer-Parse-iOS-Example-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Hotline/Pods-Hotline-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -447,7 +455,7 @@
 /* Begin PBXTargetDependency section */
 		5AD49C001AC399DD00B1B0C8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5AD49BE41AC399DD00B1B0C8 /* Layer-Parse-iOS-Example */;
+			target = 5AD49BE41AC399DD00B1B0C8 /* Hotline */;
 			targetProxy = 5AD49BFF1AC399DD00B1B0C8 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -550,7 +558,7 @@
 		};
 		5AD49C091AC399DD00B1B0C8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5D2577FDB282E79E4AA3E979 /* Pods-Layer-Parse-iOS-Example.debug.xcconfig */;
+			baseConfigurationReference = 9649DDBCE515125228FDE8C3 /* Pods-Hotline.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -569,7 +577,7 @@
 		};
 		5AD49C0A1AC399DD00B1B0C8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4499B2833234A6B927451A87 /* Pods-Layer-Parse-iOS-Example.release.xcconfig */;
+			baseConfigurationReference = 7C9C7A409749305E466D6414 /* Pods-Hotline.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -638,7 +646,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5AD49C081AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Layer-Parse-iOS-Example" */ = {
+		5AD49C081AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Hotline" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5AD49C091AC399DD00B1B0C8 /* Debug */,
@@ -647,7 +655,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5AD49C0B1AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "Layer-Parse-iOS-ExampleTests" */ = {
+		5AD49C0B1AC399DD00B1B0C8 /* Build configuration list for PBXNativeTarget "HotlineTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5AD49C0C1AC399DD00B1B0C8 /* Debug */,

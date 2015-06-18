@@ -107,7 +107,6 @@ PBJVisionDelegate
         [_dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [_dateFormatter setTimeStyle:NSDateFormatterMediumStyle];
         
-        
         [self initialize];
 
         [self gotoIdle];

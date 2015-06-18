@@ -1,6 +1,6 @@
 platform :ios, '7.0'
 
-target 'Layer-Parse-iOS-Example' do
+target 'Hotline' do
   pod 'LayerKit'
   pod 'Atlas'
   pod 'Parse'
