@@ -24,6 +24,8 @@
 #import <Parse/Parse.h>
 #import "PFUser+ATLParticipant.h"
 
-@interface HOTConversationStarterViewController : UIViewController
+#import "ViewController.h"
+
+@interface HOTConversationStarterViewController : ViewController
 
 @end

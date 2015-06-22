@@ -26,12 +26,14 @@
 #import "ATLAddressBarViewController.h"
 
 #import "HOTConversationStarterViewController.h"
+#import "HOTConversationViewController.h"
 
 @interface HOTConversationStarterViewController () <ATLParticipantTableViewControllerDelegate, ATLAddressBarViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *usersArray;
 
 @property (nonatomic, strong) ATLAddressBarViewController *addressBarController;
+@property (nonatomic, strong) UIBarButtonItem *startButton;
 
 @end
 
@@ -41,11 +43,12 @@
 {
     [super viewDidLoad];
     
-    
-    UIBarButtonItem *startButton = [[UIBarButtonItem alloc]
-                                    initWithBarButtonSystemItem:UIBarButtonSystemItemPlay
-                                    target:self action:@selector(startButtonTapped:)];
-    [self.navigationItem setRightBarButtonItem:startButton];
+    self.startButton = [[UIBarButtonItem alloc] initWithTitle:@"Start"
+                                                                    style:UIBarButtonItemStyleDone
+                                                                   target:self
+                                                                   action:@selector(startButtonTapped:)];
+    [self.navigationItem setRightBarButtonItem:self.startButton];
+    self.startButton.enabled = NO;
 
     self.addressBarController = [[ATLAddressBarViewController alloc] init];
     [self addChildViewController:self.addressBarController];
@@ -67,10 +70,42 @@
 {
     NSLog(@"startButtonTapped:");
     
+    NSSet *participants = [[self.addressBarController selectedParticipants] set];
+    if (participants.count == 0)
+        return;
+
+    // Create new conversation
+    NSError *error;
+    LYRConversation *conversation = [self.layerClient newConversationWithParticipants:participants
+                                                                              options:@{ LYRConversationOptionsDistinctByParticipantsKey: @YES }
+                                                                                error:&error];
+    if (conversation) {
+
+        // Pop ourselves out
+        [self.navigationController popToRootViewControllerAnimated:NO];
+
+        // Push new conversation view
+        HOTConversationViewController *hotVC =
+            [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+        hotVC.title = @"Hotline";
+        hotVC.conversation = conversation;
+        [self.navigationController pushViewController:hotVC animated:YES];
+    }
 }
 
 
 #pragma mark - ATLAddressBarViewController Delegate methods methods
+
+- (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController
+            didRemoveParticipant:(id<ATLParticipant>)participant
+{
+    self.startButton.enabled = [self.addressBarController selectedParticipants].count > 0;
+}
+- (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController
+            didSelectParticipant:(id<ATLParticipant>)participant
+{
+    self.startButton.enabled = [self.addressBarController selectedParticipants].count > 0;
+}
 
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController
          didTapAddContactsButton:(UIButton *)addContactsButton

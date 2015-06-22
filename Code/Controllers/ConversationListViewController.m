@@ -122,6 +122,7 @@
 - (void)composeButtonTapped:(id)sender
 {
     HOTConversationStarterViewController *starter = [[HOTConversationStarterViewController alloc] init];
+    starter.layerClient = self.layerClient;
     [self.navigationController pushViewController:starter animated:YES];
 }
 
