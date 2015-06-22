@@ -26,6 +26,8 @@
 
 #import "ViewController.h"
 
-@interface HOTConversationStarterViewController : ViewController
+@interface HOTConversationStarterViewController : UIViewController
+
+@property (nonatomic) LYRClient *layerClient;
 
 @end
