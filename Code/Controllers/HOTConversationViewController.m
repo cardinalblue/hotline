@@ -167,6 +167,10 @@ PBJVisionDelegate
                                         action:@selector(handleDebug)];
     
 
+    // Set the title
+    [self calculateTitleOfConversation:self.conversation then:^(NSString *title) {
+        self.title = title;
+    }];
     
     // Initialize selected message to the last unread, or just the last one
     NSError *error;
@@ -1020,6 +1024,44 @@ shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRec
         [self.lastSentMessages addObject:message.identifier];
     }
     
+}
+
+#pragma mark - Layer utility
+
+- (void)calculateTitleOfConversation:(LYRConversation *)conversation
+                                then:(void (^)(NSString *title))thenBlock
+{
+    
+    if ([conversation.metadata valueForKey:@"title"]){
+        thenBlock([conversation.metadata valueForKey:@"title"]);
+    } else {
+        NSArray *unresolvedParticipants = [[UserManager sharedManager] unCachedUserIDsFromParticipants:[conversation.participants allObjects]];
+        NSArray *resolvedNames = [[UserManager sharedManager] resolvedNamesFromParticipants:[conversation.participants allObjects]];
+        
+        if ([unresolvedParticipants count]) {
+            [[UserManager sharedManager] queryAndCacheUsersWithIDs:unresolvedParticipants completion:^(NSArray *participants, NSError *error) {
+                if (!error) {
+                    if (participants.count) {
+                        [self calculateTitleOfConversation:conversation then:thenBlock];
+                    }
+                } else {
+                    NSLog(@"Error querying for Users: %@", error);
+                }
+            }];
+        }
+        
+        if ([resolvedNames count] && [unresolvedParticipants count]) {
+            thenBlock([NSString stringWithFormat:@"%@ and %lu others",
+                       [resolvedNames componentsJoinedByString:@", "],
+                       (unsigned long)[unresolvedParticipants count]]);
+        } else if ([resolvedNames count] && [unresolvedParticipants count] == 0) {
+            thenBlock([NSString stringWithFormat:@"%@",
+                       [resolvedNames componentsJoinedByString:@", "]]);
+        } else {
+            thenBlock([NSString stringWithFormat:@"Conversation with %lu users...",
+                       (unsigned long)conversation.participants.count]);
+        }
+    }
 }
 
 
