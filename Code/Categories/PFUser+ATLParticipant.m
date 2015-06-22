@@ -34,7 +34,9 @@
 
 - (NSString *)fullName
 {
-    return [NSString stringWithFormat:@"%@ %@", self.username, self.lastName];
+    // jcham changed 2015/06/22
+    // return [NSString stringWithFormat:@"%@ %@", self.username, self.lastName];
+    return self.username;
 }
 
 - (NSString *)participantIdentifier
