@@ -82,7 +82,7 @@
     if (conversation) {
 
         // Pop ourselves out
-        [self.navigationController popToRootViewControllerAnimated:NO];
+        [self.navigationController popViewControllerAnimated:NO];
 
         // Push new conversation view
         HOTConversationViewController *hotVC =
