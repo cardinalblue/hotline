@@ -76,7 +76,9 @@
 
     // Create new conversation
     NSError *error;
-    LYRConversation *conversation = [self.layerClient newConversationWithParticipants:participants
+    NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
+    LYRConversation *conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers] ?:
+                                    [self.layerClient newConversationWithParticipants:participantIdentifiers
                                                                               options:@{ LYRConversationOptionsDistinctByParticipantsKey: @YES }
                                                                                 error:&error];
     if (conversation) {
@@ -87,7 +89,6 @@
         // Push new conversation view
         HOTConversationViewController *hotVC =
             [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
-        hotVC.title = @"Hotline";
         hotVC.conversation = conversation;
         [self.navigationController pushViewController:hotVC animated:YES];
     }
@@ -167,5 +168,19 @@ searchForParticipantsMatchingText:(NSString *)searchText
         }
     }];
 }
+
+#pragma mark - Layer utility
+
+- (LYRConversation *)existingConversationWithParticipantIdentifiers:(NSSet *)participantIdentifiers
+{
+    NSMutableSet *set = [participantIdentifiers mutableCopy];
+    [set addObject:self.layerClient.authenticatedUserID];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsEqualTo value:set];
+    query.limit = 1;
+    return [self.layerClient executeQuery:query error:nil].lastObject;
+}
+
+
 
 @end
