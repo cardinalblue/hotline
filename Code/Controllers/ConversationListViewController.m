@@ -26,6 +26,7 @@
 #import <ATLConstants.h>
 
 #import "HOTConversationViewController.h"
+#import "HOTConversationStarterViewController.h"
 
 @interface ConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource>
 
@@ -120,9 +121,8 @@
 
 - (void)composeButtonTapped:(id)sender
 {
-    ConversationViewController *controller = [ConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
-    controller.displaysAddressBar = YES;
-    [self.navigationController pushViewController:controller animated:YES];
+    HOTConversationStarterViewController *starter = [[HOTConversationStarterViewController alloc] init];
+    [self.navigationController pushViewController:starter animated:YES];
 }
 
 - (void)logoutButtonTapped:(id)sender

@@ -33,6 +33,7 @@
 		5691724E1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5691724D1B2ADAF0000DF4DC /* LYRMessagePart+HOTAdditions.m */; };
 		5AD49C051AC399DD00B1B0C8 /* LayerParseSampleAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */; };
 		61C3844CE21C3A5AB46D1477 /* libPods-Hotline.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C86BF0EA9B0211AFCA3640E1 /* libPods-Hotline.a */; };
+		950089D51B37B0EA002EDC66 /* HOTConversationStarterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950089D41B37B0EA002EDC66 /* HOTConversationStarterViewController.m */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
 		959081421B3171A600A02E4F /* CALayer+XibConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */; };
 /* End PBXBuildFile section */
@@ -91,6 +92,8 @@
 		5AD49C041AC399DD00B1B0C8 /* LayerParseSampleAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LayerParseSampleAppTests.m; sourceTree = "<group>"; };
 		5D2577FDB282E79E4AA3E979 /* Pods-Layer-Parse-iOS-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Layer-Parse-iOS-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Layer-Parse-iOS-Example/Pods-Layer-Parse-iOS-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		7C9C7A409749305E466D6414 /* Pods-Hotline.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Hotline.release.xcconfig"; path = "Pods/Target Support Files/Pods-Hotline/Pods-Hotline.release.xcconfig"; sourceTree = "<group>"; };
+		950089D31B37B0EA002EDC66 /* HOTConversationStarterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HOTConversationStarterViewController.h; sourceTree = "<group>"; };
+		950089D41B37B0EA002EDC66 /* HOTConversationStarterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HOTConversationStarterViewController.m; sourceTree = "<group>"; };
 		9503C3BB1B2A7CA90083DC10 /* Keys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Keys.h; sourceTree = "<group>"; };
 		9503C3BC1B2AA7F20083DC10 /* LYRClient+HOTAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LYRClient+HOTAdditions.h"; sourceTree = "<group>"; };
 		9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LYRClient+HOTAdditions.m"; sourceTree = "<group>"; };
@@ -186,6 +189,8 @@
 		25713D5D1AC6071600FC5D38 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				950089D31B37B0EA002EDC66 /* HOTConversationStarterViewController.h */,
+				950089D41B37B0EA002EDC66 /* HOTConversationStarterViewController.m */,
 				5691723F1B2A892E000DF4DC /* HOTConversationViewController.h */,
 				569172401B2A892E000DF4DC /* HOTConversationViewController.m */,
 				569172421B2A8A9D000DF4DC /* HOTConversationViewController.xib */,
@@ -433,6 +438,7 @@
 				569172411B2A892E000DF4DC /* HOTConversationViewController.m in Sources */,
 				25713D711AC6071600FC5D38 /* UserManager.m in Sources */,
 				9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */,
+				950089D51B37B0EA002EDC66 /* HOTConversationStarterViewController.m in Sources */,
 				25713D701AC6071600FC5D38 /* main.m in Sources */,
 				25713D6F1AC6071600FC5D38 /* ViewController.m in Sources */,
 			);
