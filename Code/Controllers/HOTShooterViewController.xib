@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HOTShooterViewController">
+            <connections>
+                <outlet property="cameraButton" destination="Tdq-jX-2qs" id="Mio-g0-cbF"/>
+                <outlet property="cameraView" destination="Oea-eY-xnL" id="NEX-Wd-szn"/>
+                <outlet property="cancelButton" destination="qNQ-dV-fbV" id="qPB-TF-WNb"/>
+                <outlet property="confirmImageView" destination="Lrd-T3-MFH" id="lXB-YC-ghI"/>
+                <outlet property="saveButton" destination="lN0-iF-byK" id="69U-6B-NJb"/>
+                <outlet property="statusLabel" destination="J8q-Ye-sbc" id="3Zp-4b-guN"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oea-eY-xnL" userLabel="cameraView">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                    <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Lrd-T3-MFH" userLabel="confirmImageView">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                    <color key="backgroundColor" red="0.30980392159999998" green="0.5450980392" blue="0.78823529410000004" alpha="1" colorSpace="calibratedRGB"/>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Take a selfie!" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="J8q-Ye-sbc" userLabel="statusLabel">
+                    <rect key="frame" x="250" y="26.5" width="98.5" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tdq-jX-2qs" userLabel="cameraButton">
+                    <rect key="frame" x="289" y="552" width="22" height="22"/>
+                    <connections>
+                        <action selector="cameraButtonDidTouchUpInside:" destination="-1" eventType="touchUpInside" id="qCL-1L-pPb"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lN0-iF-byK" userLabel="saveButton">
+                    <rect key="frame" x="546" y="548" width="34" height="30"/>
+                    <state key="normal" title="Save">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="saveButtonDidTouchUpInside:" destination="-1" eventType="touchUpInside" id="f5z-NQ-Sny"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qNQ-dV-fbV" userLabel="cancelButton">
+                    <rect key="frame" x="20" y="548" width="48" height="30"/>
+                    <state key="normal" title="Cancel">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="cancelButtonDidTouchUpInside:" destination="-1" eventType="touchUpInside" id="WEy-KG-3th"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="1" green="0.270588249" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="J8q-Ye-sbc" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="26" id="1XH-JV-FiW"/>
+                <constraint firstAttribute="bottom" secondItem="Lrd-T3-MFH" secondAttribute="bottom" id="2id-SP-pdu"/>
+                <constraint firstItem="Oea-eY-xnL" firstAttribute="bottom" secondItem="i5M-Pr-FkT" secondAttribute="bottom" id="2zb-j3-IPC"/>
+                <constraint firstItem="lN0-iF-byK" firstAttribute="centerY" secondItem="Tdq-jX-2qs" secondAttribute="centerY" id="83j-z3-wpP"/>
+                <constraint firstAttribute="trailing" secondItem="lN0-iF-byK" secondAttribute="trailing" constant="20" id="8rc-Td-oJt"/>
+                <constraint firstItem="Oea-eY-xnL" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="GGU-H9-HeS"/>
+                <constraint firstItem="Tdq-jX-2qs" firstAttribute="centerY" secondItem="qNQ-dV-fbV" secondAttribute="centerY" id="LdA-5M-Kwb"/>
+                <constraint firstItem="Lrd-T3-MFH" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="N4L-6W-oKS"/>
+                <constraint firstAttribute="trailing" secondItem="Lrd-T3-MFH" secondAttribute="trailing" id="Ppw-LG-Hso"/>
+                <constraint firstItem="Lrd-T3-MFH" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="UWf-zc-s7o"/>
+                <constraint firstItem="Tdq-jX-2qs" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Wx7-qo-tG7"/>
+                <constraint firstItem="Oea-eY-xnL" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="aRi-2A-Ci9"/>
+                <constraint firstItem="J8q-Ye-sbc" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="abs-4m-6b2"/>
+                <constraint firstItem="qNQ-dV-fbV" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="20" id="g20-cd-Q9u"/>
+                <constraint firstItem="Tdq-jX-2qs" firstAttribute="bottom" secondItem="i5M-Pr-FkT" secondAttribute="bottom" constant="-26" id="grJ-at-HxR"/>
+                <constraint firstItem="Oea-eY-xnL" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="hJ9-rz-L7p"/>
+            </constraints>
+            <point key="canvasLocation" x="379" y="412"/>
+        </view>
+    </objects>
+</document>

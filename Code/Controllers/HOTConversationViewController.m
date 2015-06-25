@@ -434,7 +434,7 @@ PBJVisionDelegate
     self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
     self.recordButton.backgroundColor = [UIColor clearColor];
     self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
-    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video";
+    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video (TODO)";
 
     [self suspendPlayState];
  
@@ -462,7 +462,7 @@ PBJVisionDelegate
     self.recordButton.layer.borderColor = [[UIColor redColor] CGColor];
     self.recordButton.backgroundColor = [UIColor clearColor];
     self.recordButtonLongPressGestureRecognizer.minimumPressDuration = 0.1f;
-    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video";
+    self.recordButtonHintLabel.text = @"Tap to take a photo, hold to record video (TODO)";
     
     [self suspendPlayState];
     

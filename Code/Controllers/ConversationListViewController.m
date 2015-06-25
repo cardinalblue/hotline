@@ -27,8 +27,13 @@
 
 #import "HOTConversationViewController.h"
 #import "HOTConversationStarterViewController.h"
+#import "HOTShooterViewController.h"
 
-@interface ConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource>
+@interface ConversationListViewController () <
+    ATLConversationListViewControllerDelegate,
+    ATLConversationListViewControllerDataSource,
+    HOTShooterViewControllerDelegate
+>
 
 @end
 
@@ -49,6 +54,20 @@
 
     UIBarButtonItem *composeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose target:self action:@selector(composeButtonTapped:)];
     [self.navigationItem setRightBarButtonItem:composeItem];
+    
+    // Check for the avatar (checking is a synchronous call)
+//    [SVProgressHUD show];
+    if ([self avatarNeededForUser:[PFUser currentUser]]) {
+        NSLog(@"User %@ without avatar, starting camera", [PFUser currentUser]);
+        
+        HOTShooterViewController *vc = [[HOTShooterViewController alloc] init];
+        vc.statusText = @"Need your avatar!";
+        
+        // [self.navigationController pushViewController:vc animated:YES];
+        [self presentViewController:vc animated:YES completion:nil];
+    }
+//    [SVProgressHUD dismiss];
+    
 }
 
 #pragma mark - ATLConversationListViewControllerDelegate Methods
@@ -139,5 +158,47 @@
         }
     }];
 }
- 
+
+#pragma mark - Utility
+
+- (BOOL)avatarNeededForUser:(PFUser *)user
+{
+    PFObject *userAvatar = [user objectForKey:@"avatar"];
+    [userAvatar fetch];
+    
+    PFFile *imageFile = userAvatar[@"image"];
+    return !imageFile;
+}
+
+#pragma mark - HOTShooterViewControllerDelegate
+
+- (void)shooter:(HOTShooterViewController *)shooter didConfirmImage:(UIImage *)image
+{
+    [SVProgressHUD show];
+    
+    shooter.statusText = @"Saving...";
+    
+    void (^finished)() = ^{
+        [SVProgressHUD dismiss];
+        [shooter dismissViewControllerAnimated:YES completion:nil];
+    };
+    
+    PFFile *file = [PFFile fileWithData:UIImageJPEGRepresentation(image, 0.7f)];
+    PFObject *userAvatar = [PFObject objectWithClassName:@"UserAvatar"
+                                              dictionary:@{ @"image": file }];
+    [userAvatar saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!succeeded) {
+            NSLog(@"Error %@ saving UserAvatar", error);
+            finished();
+        }
+        else {
+            PFUser *user = [PFUser currentUser];
+            [user setObject:userAvatar.objectId forKey:@"avatar"];
+            [user saveInBackground];
+            finished();
+        }
+    }];
+}
+
+
 @end
