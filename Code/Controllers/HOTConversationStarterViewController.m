@@ -20,6 +20,7 @@
 
 #import <Parse/Parse.h>
 #import <Atlas/Atlas.h>
+#import <CBToolkit/CBToolkit.h>
 
 #import "ParticipantTableViewController.h"
 #import "UserManager.h"
@@ -83,14 +84,18 @@
                                                                                 error:&error];
     if (conversation) {
 
-        // Pop ourselves out
+        // Pop ourselves out (have to save the navigationController as popping
+        // causes `navigationController` to be blanked out).
+        //
+        UINavigationController *navigationController = self.navigationController;
         [self.navigationController popViewControllerAnimated:NO];
-
+        
         // Push new conversation view
         HOTConversationViewController *hotVC =
-            [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+        [HOTConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
         hotVC.conversation = conversation;
-        [self.navigationController pushViewController:hotVC animated:YES];
+        [navigationController pushViewController:hotVC animated:YES];
+        
     }
 }
 
