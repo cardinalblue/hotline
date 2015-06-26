@@ -24,6 +24,7 @@
 #import <SVProgressHUD/SVProgressHUD.h>
 #import "UserManager.h"
 #import <ATLConstants.h>
+#import <CBToolkit/CBToolkit.h>
 
 #import "HOTConversationViewController.h"
 #import "HOTConversationStarterViewController.h"
@@ -56,17 +57,18 @@
     [self.navigationItem setRightBarButtonItem:composeItem];
     
     // Check for the avatar (checking is a synchronous call)
-//    [SVProgressHUD show];
+    [SVProgressHUD show];
     if ([self avatarNeededForUser:[PFUser currentUser]]) {
         NSLog(@"User %@ without avatar, starting camera", [PFUser currentUser]);
         
-        HOTShooterViewController *vc = [[HOTShooterViewController alloc] init];
-        vc.statusText = @"Need your avatar!";
-        
-        // [self.navigationController pushViewController:vc animated:YES];
-        [self presentViewController:vc animated:YES completion:nil];
+        [CBUtils runAfterDelay:0.2 block:^{
+            HOTShooterViewController *vc = [[HOTShooterViewController alloc] init];
+            vc.delegate = self;
+            vc.statusText = @"Need your avatar!";
+            [self presentViewController:vc animated:YES completion:nil];
+        }];
     }
-//    [SVProgressHUD dismiss];
+    [SVProgressHUD dismiss];
     
 }
 
@@ -164,10 +166,14 @@
 - (BOOL)avatarNeededForUser:(PFUser *)user
 {
     PFObject *userAvatar = [user objectForKey:@"avatar"];
+    if (![userAvatar isKindOfClass:[PFObject class]] ||
+        ![[userAvatar parseClassName] isEqualToString:@"UserAvatar"])
+        return YES;
     [userAvatar fetch];
     
     PFFile *imageFile = userAvatar[@"image"];
-    return !imageFile;
+    return !imageFile
+        || ![imageFile isKindOfClass:[PFFile class]];
 }
 
 #pragma mark - HOTShooterViewControllerDelegate
@@ -193,7 +199,7 @@
         }
         else {
             PFUser *user = [PFUser currentUser];
-            [user setObject:userAvatar.objectId forKey:@"avatar"];
+            [user setObject:userAvatar forKey:@"avatar"];
             [user saveInBackground];
             finished();
         }

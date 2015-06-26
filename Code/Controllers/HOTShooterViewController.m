@@ -64,6 +64,7 @@
     
     // ---- Camera preview
     PBJVision *pbj = [PBJVision sharedInstance];
+    pbj.delegate = self;
     pbj.cameraDevice = PBJCameraDeviceFront;
     
     AVCaptureVideoPreviewLayer *layer = [pbj previewLayer];

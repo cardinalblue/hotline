@@ -36,6 +36,7 @@
 		950089D51B37B0EA002EDC66 /* HOTConversationStarterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950089D41B37B0EA002EDC66 /* HOTConversationStarterViewController.m */; };
 		950089DB1B39BB56002EDC66 /* HOTShooterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 950089D71B39B598002EDC66 /* HOTShooterViewController.m */; };
 		9503C3BE1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 9503C3BD1B2AA7F20083DC10 /* LYRClient+HOTAdditions.m */; };
+		95836F741B3CFA32009AB263 /* HOTShooterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 950089D81B39B598002EDC66 /* HOTShooterViewController.xib */; };
 		959081421B3171A600A02E4F /* CALayer+XibConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 959081411B3171A600A02E4F /* CALayer+XibConfiguration.m */; };
 /* End PBXBuildFile section */
 
@@ -370,6 +371,7 @@
 				25713D551AC605FC00FC5D38 /* parse_logo.png in Resources */,
 				25713D561AC605FC00FC5D38 /* Users.json in Resources */,
 				25713D4E1AC605FC00FC5D38 /* LaunchScreen.xib in Resources */,
+				95836F741B3CFA32009AB263 /* HOTShooterViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
