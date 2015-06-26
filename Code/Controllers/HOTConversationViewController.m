@@ -12,6 +12,7 @@
 #import "LYRClient+HOTAdditions.h"
 #import "LYRMessage+HOTAdditions.h"
 #import <QuartzCore/QuartzCore.h>
+#import <CBToolkit/CBToolkit.h>
 
 #import "PBJVision.h"
 
@@ -190,6 +191,7 @@ PBJVisionDelegate
         }
         else {
             [self updateCounts];
+            [self updatePlayingDisplay];    // Will display a default user avatar
 
             NSLog(@"Nothing unread so going idle...");
             [self gotoIdle];
@@ -334,7 +336,6 @@ PBJVisionDelegate
 - (void)gotoNextMessage
 {
     NSLog(@">>>> gotoNextMessage");
-    NSAssert(self.selectedMessage, @"gotoNextMessage no selectedMessage");
 
     NSError *error;
     LYRMessage *next = self.selectedMessage;
@@ -616,72 +617,81 @@ PBJVisionDelegate
 
 - (void)updatePlayingDisplay
 {
+    NSString *userID;
+    LYRMessage *message = self.selectedMessage;
+    
     if (!self.selectedMessage) {
+        // If no message, display the first user in the conversation that's not us
         self.playingLabel.hidden = YES;
+        
+        NSString *currentUserID = [PFUser currentUser].objectId;
+        userID = [self.conversation.participants find:^BOOL(NSString *userID) {
+            return ![userID isEqualToString:currentUserID];
+        }];
     }
     else {
         self.playingLabel.hidden = NO;
-        LYRMessage *message = self.selectedMessage;
-        LYRActor *sender = message.sender;
-        NSString *userID = sender.userID;
-        if (userID) {
+        userID = message.sender.userID;
+    }
+    
+    // Update based on the user
+    if (userID) {
+        
+        // ---- Get user information
+        [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
+                                                    completion:^(NSArray *participants, NSError *error) {
+                                                        
+            // Double check again if same message
+            PFUser *user = [participants firstObject];
+            if (!user || self.selectedMessage != message)
+                return;
+                
+            // Update label
+            NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
+            self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
+                                      user.username, dateString ?: @""];
+            [self pulseView:self.playingLabel];
             
-            // ---- Get user information
-            [[UserManager sharedManager] queryAndCacheUsersWithIDs:@[userID]
-                                                        completion:^(NSArray *participants, NSError *error) {
-                                                            
+            // Check if we should update the image or leave there
+            if (self.lastImageMessage &&
+                self.lastImageMessage.sender &&
+                [self.lastImageMessage.sender.userID isEqualToString:userID]) {
+                return;
+            }
+            
+            // Update image
+            PFObject *userAvatar = [user objectForKey:@"avatar"];
+            [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
+                                                     NSError *PF_NULLABLE_S error) {
+                
                 // Double check again if same message
-                PFUser *user = [participants firstObject];
-                if (!user || self.selectedMessage != message)
+                if (!userAvatar || self.selectedMessage != message)
                     return;
+                
                     
-                // Update label
-                NSString *dateString = [_dateFormatter stringFromDate:self.selectedMessage.sentAt];
-                self.playingLabel.text = [NSString stringWithFormat:@"%@\n%@",
-                                          user.username, dateString ?: @""];
-                [self pulseView:self.playingLabel];
-                
-                // Check if we should update the image or leave there
-                if (self.lastImageMessage &&
-                    self.lastImageMessage.sender &&
-                    [self.lastImageMessage.sender.userID isEqualToString:userID]) {
-                    return;
-                }
-                
-                // Update image
-                PFObject *userAvatar = [user objectForKey:@"avatar"];
-                [userAvatar fetchInBackgroundWithBlock:^(PFObject *PF_NULLABLE_S userAvatar,
-                                                         NSError *PF_NULLABLE_S error) {
+                PFFile *imageFile = userAvatar[@"image"];
+                [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
+                                                          NSError *PF_NULLABLE_S error) {
                     
                     // Double check again if same message
-                    if (!userAvatar || self.selectedMessage != message)
+                    if (!data || self.selectedMessage != message)
                         return;
-                    
-                        
-                    PFFile *imageFile = userAvatar[@"image"];
-                    [imageFile getDataInBackgroundWithBlock:^(NSData *PF_NULLABLE_S data,
-                                                              NSError *PF_NULLABLE_S error) {
-                        
-                        // Double check again if same message
-                        if (!data || self.selectedMessage != message)
-                            return;
 
-                        // Set the image
-                        UIImage *image = [UIImage imageWithData:data];
-                        [self.imageView setImage:image];
-                        
-                        // Clear the lastImage
-                        self.lastImageMessage = nil;
-                        self.lastImageDisplayedAt    = nil;
-                    }];
+                    // Set the image
+                    UIImage *image = [UIImage imageWithData:data];
+                    [self.imageView setImage:image];
+                    
+                    // Clear the lastImage
+                    self.lastImageMessage = nil;
+                    self.lastImageDisplayedAt    = nil;
                 }];
-                 
-                
-                // NSLog(@"avatar %@", userAvatar);
             }];
-        }
-        
+             
+            
+            // NSLog(@"avatar %@", userAvatar);
+        }];
     }
+        
 }
 
 // Need to clear these to disable the "stalling" mechanism.
