@@ -30,6 +30,8 @@
 
 @implementation AppDelegate
 
+BOOL LogDebugEnabled = YES;
+
 static NSString *const LayerAppIDString         = LAYER_APP_ID;
 static NSString *const ParseAppIDString         = PARSE_APP_ID;
 static NSString *const ParseClientKeyString     = PARSE_CLIENT_KEY;
