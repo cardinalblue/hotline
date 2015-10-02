@@ -8,7 +8,7 @@
 
 #import <LayerKit/LayerKit.h>
 
-@interface LYRMessagePart (HOTAdditions)
+@interface LYRMessagePart (HOTAdditions) <LYRProgressDelegate>
 
 - (void)downloadWithCompletion:(void (^)(LYRMessagePart *part, BOOL success))completionBlock;
 

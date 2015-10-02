@@ -54,4 +54,9 @@
     return [[NSString stringWithFormat:@"%@%@", [self.firstName substringToIndex:1], [self.lastName substringToIndex:1]] uppercaseString];
 }
 
+- (NSURL *)avatarImageURL
+{
+    return nil;
+}
+
 @end

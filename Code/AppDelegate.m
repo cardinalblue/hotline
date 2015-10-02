@@ -57,7 +57,7 @@ static NSString *const ParseClientKeyString     = PARSE_CLIENT_KEY;
     [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
     
     // Initializes a LYRClient object
-    NSUUID *appID = [[NSUUID alloc] initWithUUIDString:LayerAppIDString];
+    NSURL *appID = [[NSURL alloc] initWithString:LAYER_APP_ID];
     LYRClient *layerClient = [LYRClient clientWithAppID:appID];
     layerClient.autodownloadMaximumContentSize = 2 * 1024 * 1024;  // 2MB
     layerClient.autodownloadMIMETypes = [NSSet setWithArray:@[@"audio/mp4",@"image/jpeg"]];

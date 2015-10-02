@@ -543,6 +543,10 @@ PBJVisionDelegate
     }
 }
 
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    
+}
 
 #pragma mark - Do stuff
 

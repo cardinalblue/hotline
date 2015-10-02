@@ -9,7 +9,7 @@
 #import "LYRMessagePart+HOTAdditions.h"
 #import <ObjcAssociatedObjectHelpers/ObjcAssociatedObjectHelpers.h>
 
-@interface LYRMessagePart () <LYRProgressDelegate>
+@interface LYRMessagePart ()
 
 @property (nonatomic, strong) LYRProgress *downloadProgress;
 @property (nonatomic, copy) void (^completionBlock)(LYRMessagePart *part, BOOL success);
